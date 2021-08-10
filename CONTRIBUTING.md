@@ -1,6 +1,15 @@
 # Guidelines for contributors and maintainers
 
 
+## Git branching
+
+The `dev` branch will be used for development.
+It's `HEAD` will point to potentially unstable code which is pending release.
+Most contributors will want to branch off `dev` before making changes.
+The `main` branch will be used for tagged commits (releases),
+which will mostly be merges from `dev`.
+
+
 ## Formatting
 
 Write source code in UTF-8, with POSIX-compliant line terminators (i.e. `\n`).
