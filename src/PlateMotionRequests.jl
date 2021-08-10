@@ -86,10 +86,8 @@ end
 
 function platemotion(xyz::NTuple{3,Real}, site::AbstractString = ""; kwargs...)
     x, y, z = xyz
-    @show x, y, z
     request = _kwargparser(kwargs)
     push!(request, :x => string(x), :y => string(y), :z => string(z), :site => site)
-    @show request
     return _parse!(_submit(request), request[:format])
 end
 
@@ -130,7 +128,12 @@ end
 function _validate_format(format::AbstractString)::String
     supported_formats = ("ascii", "ascii_xyz", "psvelo")
     if !(format in supported_formats)
-        throw(ArgumentError("format must be one of $(supported_formats)"))
+        throw(
+            ArgumentError(
+                "`format` must be one of `$(supported_formats)`." *
+                " You've supplied `format = $(format)`.",
+            ),
+        )
     end
     return String(format)
 end

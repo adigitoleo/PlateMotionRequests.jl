@@ -28,10 +28,8 @@ Trying to read from a missing file is an example of an "unexpected" error.
 General guidelines:
 
 -   Begin the message with a lowercase character
--   Omit punctuation at the end of sentences
+-   Enclose code in backticks, i.e. '\`...\`'
 -   Don't include web hyperlinks
--   Write lines shorter than 80 characters
--   Use one sentence (or clause) per line
 
 ### Expected errors
 
@@ -41,9 +39,9 @@ General guidelines:
 
 Each component should consist of no more than two lines. For example:
 
-    "`angle` must be in the interval (-90,90] \n"
-    "You've supplied `angle = $(angle)` \n"
-    "You might want to use `transform_angle`"
+    "`angle` must be in the interval (-90,90]." *
+    " You've supplied `angle = $(angle)`." *
+    " You might want to use `transform_angle`."
 
 ### Unexpected errors
 
@@ -52,6 +50,6 @@ Each component should consist of no more than two lines. For example:
 
 Each component should consist of no more than two lines. For example:
 
-    "unable to write to '$(file)' \n"
-    "The file seems to be missing \n"
-    "You can use `loglevel=3` to enable debugging messages"
+    "unable to write to '$(file)'." *
+    " The file seems to be missing." *
+    " You can use `loglevel=3` to enable debugging messages."
