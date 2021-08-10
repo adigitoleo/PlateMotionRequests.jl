@@ -28,6 +28,8 @@ For advanced packaging instructions, refer to <https://docs.julialang.org/en/v1/
         repeat(longitudes, inner = length(latitudes)),
     )
 
+Responses are tabulated using [TypedTables.jl](https://typedtables.juliadata.org/latest/):
+
     Table with 6 columns and 45 rows:
           lon    lat    velocity_east  velocity_north  plate_and_reference  model
         ┌────────────────────────────────────────────────────────────────────────────
