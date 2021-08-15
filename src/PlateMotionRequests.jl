@@ -103,7 +103,7 @@ function _validate_format(format::AbstractString)::String
         throw(
             ArgumentError(
                 "`format` must be one of `$(supported_formats)`." *
-                " You've supplied `format = $(format)`."
+                " You've supplied `format = $(format)`.",
             ),
         )
     end
@@ -190,6 +190,11 @@ ParseError() = ParseError("")
 function _mktable(t::DataType)
     return Table(NamedTuple{fieldnames(t)}(type[] for type in fieldtypes(t)))
 end
+function _mktable(d::Matrix, t::DataType)
+    return Table(;
+        (colname => coldata for (colname, coldata) in zip(fieldnames(t), eachcol(d)))...,
+    )
+end
 
 
 function _mkrow(x::Union{_FormatASCII,_FormatASCIIxyz,_FormatPsvelo})
@@ -221,21 +226,11 @@ function read_platemotion(file::AbstractString)
             ParseError(
                 "columns in `file` must match a supported format." *
                 " You've supplied a corrupt or unsupported file." *
-                " If possible, try to write the file again using `write_platemotion`."
+                " If possible, try to write the file again using `write_platemotion`.",
             ),
         )
     end
     return table
-end
-
-
-function _mktable(d::Matrix, t::DataType)
-    return Table(;
-        (
-            colname => coldata for
-            (colname, coldata) in zip(fieldnames(t), eachcol(d))
-        )...,
-    )
 end
 
 
