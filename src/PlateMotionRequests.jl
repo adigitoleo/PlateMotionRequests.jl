@@ -103,7 +103,7 @@ function _validate_format(format::AbstractString)::String
         throw(
             ArgumentError(
                 "`format` must be one of `$(supported_formats)`." *
-                " You've supplied `format = $(format)`.",
+                " You've supplied `format = $(format)`."
             ),
         )
     end
@@ -207,20 +207,21 @@ end
 
 
 function read_platemotion(file::AbstractString)
-    data, header = readdlm(file, '\t', Any, '\n')
+    data, header = readdlm(file, '\t', Any, '\n', header = true)
     # First cell of the header is the comment marker.
-    if header[2:end] == String.(fieldnames(_FormatASCII))
+    isformat(format) = Set(header[2:end]) == Set(String.(fieldnames(format)))
+    if isformat(_FormatASCII)
         table = _mktable(data, _FormatASCII)
-    elseif header[2:end] == String.(fieldnames(_FormatASCIIxyz))
+    elseif isformat(_FormatASCIIxyz)
         table = _mktable(data, _FormatASCIIxyz)
-    elseif header[2:end] == String.(fieldnames(_FormatPsvelo))
+    elseif isformat(_FormatPsvelo)
         table = _mktable(data, _FormatPsvelo)
     else
         throw(
             ParseError(
                 "columns in `file` must match a supported format." *
-                " You've supplied a corrupt or unsupported file.",
-                " If possible, try to write the file again using `write_platemotion`.",
+                " You've supplied a corrupt or unsupported file." *
+                " If possible, try to write the file again using `write_platemotion`."
             ),
         )
     end
@@ -228,11 +229,11 @@ function read_platemotion(file::AbstractString)
 end
 
 
-function _mktable(d::Matrix, format::Union{_FormatASCII,_FormatASCIIxyz,_FormatPsvelo})
+function _mktable(d::Matrix, t::DataType)
     return Table(;
         (
             colname => coldata for
-            (colname, coldata) in zip(columnnames(format), eachcol(data))
+            (colname, coldata) in zip(fieldnames(t), eachcol(d))
         )...,
     )
 end
