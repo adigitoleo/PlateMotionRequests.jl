@@ -16,19 +16,18 @@ using TypedTables
 
 
 """
-    platemotion(lat::Real, lon::Real, height::Real = 0, site::AbstractString = ""; kwargs...)
     platemotion(lats::T, lons::T, heights::T; kwargs...) where {T<:AbstractArray{<:Real}}
     platemotion(lats::T, lons::T; kwargs...) where {T<:AbstractArray{<:Real}}
-    platemotion(xyz::NTuple{3, Real}, site::AbstractString = ""; kwargs...)
     platemotion(XYZ::NTuple{3, T}, kwargs...) where {T<:AbstractArray{<:Real}}
 
 Request plate motion data from the [UNAVCO Plate Motion Calculator](https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html). Headers and metadata are stripped from the output, which is parsed into a [`Table`](https://typedtables.juliadata.org/latest/man/table/).
 
 !!! note
 
-    Site names for multi-location requests are not supported.
+    Site names are not supported.
     Only 'ansii', 'ansii_xyz' and 'psvelo' formats are supported.
-    Not all optional argument permutations are permitted, see the website linked above for further details.
+    Not all optional argument permutations are permitted,
+    see the website linked above for further details.
 
 Optional arguments:
 - `model`: The plate motion model to use for calculations, or GSRM v2.1 by default.
@@ -50,24 +49,6 @@ Optional arguments:
 
 """
 function platemotion(
-    lat::Real,
-    lon::Real,
-    height::Real = 0,
-    site::AbstractString = "";
-    kwargs...,
-)
-    request = _kwargparser(kwargs)
-    push!(
-        request,
-        :lat => string(lat),
-        :lon => string(lon),
-        :h => string(height),
-        :site => site,
-    )
-    return _parse!(_submit(request), request[:format])
-end
-
-function platemotion(
     lats::T,
     lons::T,
     heights::T = fill(0, length(lats));
@@ -79,13 +60,6 @@ function platemotion(
         :geo =>
             join(mapslices(x -> join(x, " "), hcat(lons, lats, heights), dims = 2), ",\n"),
     )
-    return _parse!(_submit(request), request[:format])
-end
-
-function platemotion(xyz::NTuple{3,Real}, site::AbstractString = ""; kwargs...)
-    x, y, z = xyz
-    request = _kwargparser(kwargs)
-    push!(request, :x => string(x), :y => string(y), :z => string(z), :site => site)
     return _parse!(_submit(request), request[:format])
 end
 
