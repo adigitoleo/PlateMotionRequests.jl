@@ -1,6 +1,4 @@
-"""Plate motion data requests using the UNAVCO Plate Motion Calculator,
-
-https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html
+"""Plate motion data requests using the [UNAVCO Plate Motion Calculator](https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html).
 
 Exported names:
 $(EXPORTS)
@@ -24,9 +22,9 @@ using TypedTables
     platemotion(xyz::NTuple{3, Real}, site::AbstractString = ""; kwargs...)
     platemotion(XYZ::NTuple{3, T}, kwargs...) where {T<:AbstractArray{<:Real}}
 
-Request plate motion data from the [UNAVCO Plate Motion Calculator](https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html). Headers and metadata are stripped from the output, which is parsed into a [Table](@ref).
+Request plate motion data from the [UNAVCO Plate Motion Calculator](https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html). Headers and metadata are stripped from the output, which is parsed into a [`Table`](https://typedtables.juliadata.org/latest/man/table/).
 
-!! note
+!!! note
 
     Site names for multi-location requests are not supported.
     Only 'ansii', 'ansii_xyz' and 'psvelo' formats are supported.
