@@ -205,7 +205,7 @@ end
 
 function write_platemotion(file::AbstractString, table::Table)
     open(file, "w") do io
-        writedlm(io, pushfirst!(String.(columnnames(table)), "#\t"))
+        writedlm(io, [append!(["#"], String.(columnnames(table)))])
         writedlm(io, table)
     end
 end
