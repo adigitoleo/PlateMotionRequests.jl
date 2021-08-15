@@ -181,6 +181,12 @@ struct _FormatASCIIxyz
 end
 
 
+struct ParseError <: Exception
+    msg::AbstractString
+end
+ParseError() = ParseError("")
+
+
 function _mktable(t::DataType)
     return Table(NamedTuple{fieldnames(t)}(type[] for type in fieldtypes(t)))
 end
@@ -189,6 +195,46 @@ end
 function _mkrow(x::Union{_FormatASCII,_FormatASCIIxyz,_FormatPsvelo})
     fields = fieldnames(typeof(x))
     return NamedTuple{fields}((getfield(x, field) for field in fields))
+end
+
+
+function write_platemotion(file::AbstractString, table::Table)
+    open(file, "w") do io
+        writedlm(io, pushfirst!(String.(columnnames(table)), "#\t"))
+        writedlm(io, table)
+    end
+end
+
+
+function read_platemotion(file::AbstractString)
+    data, header = readdlm(file, '\t', Any, '\n')
+    # First cell of the header is the comment marker.
+    if header[2:end] == String.(fieldnames(_FormatASCII))
+        table = _mktable(data, _FormatASCII)
+    elseif header[2:end] == String.(fieldnames(_FormatASCIIxyz))
+        table = _mktable(data, _FormatASCIIxyz)
+    elseif header[2:end] == String.(fieldnames(_FormatPsvelo))
+        table = _mktable(data, _FormatPsvelo)
+    else
+        throw(
+            ParseError(
+                "columns in `file` must match a supported format." *
+                " You've supplied a corrupt or unsupported file.",
+                " If possible, try to write the file again using `write_platemotion`.",
+            ),
+        )
+    end
+    return table
+end
+
+
+function _mktable(d::Matrix, format::Union{_FormatASCII,_FormatASCIIxyz,_FormatPsvelo})
+    return Table(;
+        (
+            colname => coldata for
+            (colname, coldata) in zip(columnnames(format), eachcol(data))
+        )...,
+    )
 end
 
 
