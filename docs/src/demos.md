@@ -78,14 +78,9 @@ To plot the plate motion using [GMT](https://www.generic-mapping-tools.org/)
 we need to save the data to a file:
 
 ```julia
-julia> using DelimitedFiles
-julia> open("platemotion.dat", "w") do io
-           writedlm(io, GSRMdata)
-       end
+julia> write_platemotion("platemotion.dat", GSRMdata)
 ```
 
-By default, `writedlm` uses tabs as delimiters.
-Fortunately, this is also the default for GMT data files.
 This example GMT script should plot the data as vectors on a map.
 In general, the scaling parameters will need to be adjusted depending on the map size.
 

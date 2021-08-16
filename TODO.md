@@ -1,0 +1,3 @@
+- Tests
+- Rate limits? Prevent accidental spamming of requests to the server.
+- Caching?
