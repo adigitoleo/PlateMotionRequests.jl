@@ -95,4 +95,4 @@ gmt end show
 
 ```
 
-![](../assets/platemotion.png)
+![](assets/platemotion.png)
