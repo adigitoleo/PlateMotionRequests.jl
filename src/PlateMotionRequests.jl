@@ -18,9 +18,9 @@ using TypedTables
 
 
 """
-    platemotion(lats::T, lons::T, heights::T; kwargs...) where {T<:AbstractArray{<:Real}}
-    platemotion(lats::T, lons::T; kwargs...) where {T<:AbstractArray{<:Real}}
-    platemotion(XYZ::NTuple{3, T}, kwargs...) where {T<:AbstractArray{<:Real}}
+    platemotion(lats::T, lons::T, heights::T; kwargs...) where {T<:AbstractArray}
+    platemotion(lats::T, lons::T; kwargs...) where {T<:AbstractArray}
+    platemotion(XYZ::NTuple{3, T}, kwargs...) where {T<:AbstractArray}
 
 Request plate motion data from the [UNAVCO Plate Motion Calculator](https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html). Headers and metadata are stripped from the output, which is parsed into a [`Table`](https://typedtables.juliadata.org/latest/man/table/).
 
@@ -55,7 +55,7 @@ function platemotion(
     lons::T,
     heights::T = fill(0, length(lats));
     kwargs...,
-) where {T<:AbstractArray{<:Real}}
+) where {T<:AbstractArray}
     request = _kwargparser(kwargs)
     push!(
         request,
@@ -65,7 +65,7 @@ function platemotion(
     return _parse!(_submit(request), request[:format])
 end
 
-function platemotion(XYZ::NTuple{3,T}; kwargs...) where {T<:AbstractArray{<:Real}}
+function platemotion(XYZ::NTuple{3,T}; kwargs...) where {T<:AbstractArray}
     X, Y, Z = XYZ
     request = _kwargparser(kwargs)
     push!(
@@ -76,7 +76,7 @@ function platemotion(XYZ::NTuple{3,T}; kwargs...) where {T<:AbstractArray{<:Real
 end
 
 
-function _kwargparser(kwargs::Base.Iterators.Pairs)::Dict{Symbol,String}
+function _kwargparser(kwargs::Base.Iterators.Pairs)
     kwargs = Dict(kwargs)
     return Dict(
         :model => get(kwargs, :model, "gsrm_2014"),
@@ -99,7 +99,7 @@ function _kwargparser(kwargs::Base.Iterators.Pairs)::Dict{Symbol,String}
 end
 
 
-function _validate_format(format::AbstractString)::String
+function _validate_format(format)
     supported_formats = ("ascii", "ascii_xyz", "psvelo")
     if !(format in supported_formats)
         throw(
@@ -113,7 +113,7 @@ function _validate_format(format::AbstractString)::String
 end
 
 
-function _submit(request::Dict{Symbol,String})::HTTP.Response
+function _submit(request)
     return HTTP.post(
         "https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion/model",
         [],  # Empty header.
@@ -122,7 +122,7 @@ function _submit(request::Dict{Symbol,String})::HTTP.Response
 end
 
 
-function _parse!(raw::HTTP.Response, format::String)::Table
+function _parse!(raw::HTTP.Response, format)
     body = raw.body
     # Data is inside the <pre> tag.
     bytes = body[findfirst(b"<pre>", body)[end]+1:findfirst(b"</pre>", body)[1]-1]
@@ -206,14 +206,14 @@ end
 
 
 """
-    write_platemotion(file::AbstractString, table::Table)
+    write_platemotion(file, table)
 
 Write plate motion table to `file` as tab-delimited text columns.
 The first line written is a tab-delimited header containing the column names.
 Note that the first header column is a comment marker (`#`), not a column name.
 
 """
-function write_platemotion(file::AbstractString, table::Table)
+function write_platemotion(file, table)
     open(file, "w") do io
         writedlm(io, [append!(["#"], String.(columnnames(table)))])
         writedlm(io, table)
@@ -222,7 +222,7 @@ end
 
 
 """
-    read_platemotion(file::AbstractString)
+    read_platemotion(file)
 
 Read tab-delimited plate motion data from `file`.
 Expects a single tab-delimited header line (starting with a comment marker),
@@ -230,7 +230,7 @@ with column names that match one of the supported formats.
 See [`platemotion`](@ref) for details.
 
 """
-function read_platemotion(file::AbstractString)
+function read_platemotion(file)
     data, header = readdlm(file, '\t', Any, '\n', header = true)
     # First cell of the header is the comment marker.
     isformat(format) = Set(header[2:end]) == Set(String.(fieldnames(format)))
