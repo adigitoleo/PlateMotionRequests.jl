@@ -30,7 +30,7 @@ to show:
 
 ## Error messages
 
-Errors can be classified as expected or unexpected. 
+Errors can be classified as expected or unexpected.
 Expected errors will usually be implemented with `ArgumentError` or similar.
 Trying to read from a missing file is an example of an "unexpected" error.
 
@@ -62,3 +62,21 @@ Each component should consist of no more than two lines. For example:
     "unable to write to '$(file)'." *
     " The file seems to be missing." *
     " You can use `loglevel=3` to enable debugging messages."
+
+
+## Releasing new versions
+
+Releasing versions requires administrator access to the SourceHut and GitHub repositories.
+Version releases should adhere to [semantic versioning](https://semver.org/).
+Releasing new versions involves the following steps:
+
+1. On the `dev` branch, increment the version number in `Project.toml`.
+2. Merge the `dev` branch into `main`.
+3. Create an annotated tag on `main`, with a message in the format `<PackageName> v<version> [(un)registered]` (the last component should indicate if the release will be registered in the Julia General Registry).
+4. Create a documentation branch with `git switch -c gh-pages-<version>`.
+5. Build the web docs with `julia --project=docs/ docs/make.jl`.
+6. From the project root: `mv docs/build site`.
+7. Remove the `docs` folder **only on this branch** (due to GitHub Pages inflexibility).
+8. On the documentation branch: `mv site docs`.
+9. On the documentation branch: `git add -A`, `git c -m "Docs for v<version>"`, push changes to all remotes, push tags to all remotes.
+10. In the GitHub repository web UI, navigate to `Settings > Pages`, change the branch accordingly and make sure it is looking in the `docs/` folder.
