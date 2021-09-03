@@ -5,6 +5,9 @@ A Julia package for plate motion data requests using the [UNAVCO Plate Motion Ca
 The package is open source,
 and [the code is available](https://git.sr.ht/~adigitoleo/PlateMotionRequests.jl)
 for free under the Zero-Clause BSD license.
+There is also a website with [online documentation](https://adigitoleo.github.io/PlateMotionRequests.jl/).
+
+**Versions prior to `2.0.1` were experimental and should be avoided if possible.**
 
 
 ## Installation

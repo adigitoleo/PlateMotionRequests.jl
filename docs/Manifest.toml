@@ -37,9 +37,9 @@ uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 
 [[Dictionaries]]
 deps = ["Indexing", "Random"]
-git-tree-sha1 = "011d10589449681ad631c0f866a2ce72771648c6"
+git-tree-sha1 = "6eafb1f48014b50f9b25f8d37cf6684cea01382c"
 uuid = "85a47980-9c8c-11e8-2b9f-f7ca1fa99fb4"
-version = "0.3.10"
+version = "0.3.11"
 
 [[DocStringExtensions]]
 deps = ["LibGit2"]
@@ -55,9 +55,9 @@ version = "0.27.5"
 
 [[HTTP]]
 deps = ["Base64", "Dates", "IniFile", "Logging", "MbedTLS", "NetworkOptions", "Sockets", "URIs"]
-git-tree-sha1 = "44e3b40da000eab4ccb1aecdc4801c040026aeb5"
+git-tree-sha1 = "60ed5f1643927479f845b0135bb369b031b541fa"
 uuid = "cd3eb016-35fb-5094-929b-558a96fad6f3"
-version = "0.9.13"
+version = "0.9.14"
 
 [[IOCapture]]
 deps = ["Logging", "Random"]
@@ -135,7 +135,7 @@ version = "2.0.3"
 deps = ["DelimitedFiles", "DocStringExtensions", "HTTP", "TypedTables"]
 path = ".."
 uuid = "d13234e1-ff52-466f-9770-1615bbbda812"
-version = "1.0.0"
+version = "2.0.1"
 
 [[Printf]]
 deps = ["Unicode"]
