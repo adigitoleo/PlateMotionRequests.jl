@@ -99,6 +99,10 @@ so releasing stable versions requires administrator access to the online GitHub 
 9. Create an annotated git tag with `git tag -am "Version <version>" v<version>`.
 10. Push `next` to all remotes (with `--follow-tags`).
 
+Some of the above steps are automated in `tools/make-next.jl`.
+The script requires [ArgParse.jl](https://github.com/carlobaldassi/ArgParse.jl) and
+[JuliaFormatter](https://github.com/domluna/JuliaFormatter.jl).
+
 ### Releasing a new version on `main` (stable)
 
 Once a release is considered stable enough, it can be merged onto `main` from `next`.
