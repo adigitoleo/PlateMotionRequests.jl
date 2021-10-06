@@ -210,12 +210,11 @@ end
 
 Write plate motion table to `file` as tab-delimited text columns.
 The first line written is a tab-delimited header containing the column names.
-Note that the first header column is a comment marker (`#`), not a column name.
 
 """
 function write_platemotion(file, table)
     open(file, "w") do io
-        writedlm(io, [append!(["#"], String.(columnnames(table)))])
+        writedlm(io, String.(columnnames(table)))
         writedlm(io, table)
     end
 end
@@ -225,15 +224,14 @@ end
     read_platemotion(file)
 
 Read tab-delimited plate motion data from `file`.
-Expects a single tab-delimited header line (starting with a comment marker),
+Expects a single tab-delimited header line,
 with column names that match one of the supported formats.
 See [`platemotion`](@ref) for details.
 
 """
 function read_platemotion(file)
     data, header = readdlm(file, '\t', Any, '\n', header = true)
-    # First cell of the header is the comment marker.
-    isformat(format) = Set(header[2:end]) == Set(String.(fieldnames(format)))
+    isformat(format) = Set(header) == Set(String.(fieldnames(format)))
     if isformat(_FormatASCII)
         table = _mktable(data, _FormatASCII)
     elseif isformat(_FormatASCIIxyz)

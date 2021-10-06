@@ -90,7 +90,7 @@ In general, the scaling parameters will need to be adjusted depending on the map
 gmt begin platemotion
     gmt psbasemap -R110/210/-40/40 -JM14c -Baf -BWSen
     gmt grdimage @earth_relief_10m -JM -n+a -t60
-    gmt psvelo platemotion.dat -Se0.015/0.95 -Gblack -W1c,black
+    gmt psvelo platemotion.dat -Se0.015/0.95 -Gblack -W1c,black -h1
 gmt end show
 
 ```
