@@ -215,7 +215,7 @@ The first line written is a tab-delimited header containing the column names.
 function write_platemotion(file, table)
     open(file, "w") do io
         println(io, join(String.(columnnames(table)), '\t'))
-        writedlm(io, table)
+        writedlm(io, table, '\t')
     end
 end
 
