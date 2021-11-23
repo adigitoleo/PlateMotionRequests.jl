@@ -18,11 +18,11 @@ using TypedTables
 
 
 """
-    platemotion(lats::T, lons::T, heights::T; kwargs...) where {T<:AbstractArray}
-    platemotion(lats::T, lons::T; kwargs...) where {T<:AbstractArray}
-    platemotion(XYZ::NTuple{3, T}, kwargs...) where {T<:AbstractArray}
+    platemotion(lats, lons, heights; kwargs...)
+    platemotion(lats, lons; kwargs...)
+    platemotion(XYZ, kwargs...)
 
-Request plate motion data from the [UNAVCO Plate Motion Calculator](https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html). Headers and metadata are stripped from the output, which is parsed into a [`Table`](https://typedtables.juliadata.org/latest/man/table/).
+Request plate motion data from the [UNAVCO Plate Motion Calculator](https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html). Headers and metadata are stripped from the output, which is parsed into a [`Table`](https://typedtables.juliadata.org/latest/man/table/). Accepts either separate vectors for latitude, longitude and optionally height. The XYZ input method is deprecated, and will be removed in the next release.
 
 !!! note
 
@@ -50,12 +50,7 @@ Optional arguments:
 - `format`: Output format for the data section of the response, or ASCII by default.
 
 """
-function platemotion(
-    lats::T,
-    lons::T,
-    heights::T = fill(0, length(lats));
-    kwargs...,
-) where {T<:AbstractArray}
+function platemotion(lats, lons, heights = fill(0, length(lats)); kwargs...)
     request = _kwargparser(kwargs)
     push!(
         request,
@@ -65,7 +60,7 @@ function platemotion(
     return _parse!(_submit(request), request[:format])
 end
 
-function platemotion(XYZ::NTuple{3,T}; kwargs...) where {T<:AbstractArray}
+function platemotion(XYZ; kwargs...)
     X, Y, Z = XYZ
     request = _kwargparser(kwargs)
     push!(
