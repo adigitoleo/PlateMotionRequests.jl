@@ -248,4 +248,10 @@ function read_platemotion(file)
 end
 
 
+function _pkgversion()
+    # <https://discourse.julialang.org/t/how-to-find-out-the-version-of-a-package-from-its-module/37755/11>
+    return VersionNumber(TOML.parsefile("$(@__DIR__)/../Project.toml")["version"])
+end
+
+
 end # PlateMotionRequests
