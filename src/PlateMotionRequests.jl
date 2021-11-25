@@ -14,6 +14,7 @@ using DelimitedFiles
 
 using DocStringExtensions
 using HTTP
+using TOML
 using TypedTables
 
 
@@ -111,7 +112,7 @@ end
 function _submit(request)
     return HTTP.post(
         "https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion/model",
-        [],  # Empty header.
+        ["User-Agent" => "PlateMotionRequests.jl/$(_pkgversion()) (Julia/$VERSION)"],
         HTTP.Form(request),
     )
 end
@@ -243,6 +244,12 @@ function read_platemotion(file)
         )
     end
     return table
+end
+
+
+function _pkgversion()
+    # <https://discourse.julialang.org/t/how-to-find-out-the-version-of-a-package-from-its-module/37755/11>
+    return VersionNumber(TOML.parsefile("$(@__DIR__)/../Project.toml")["version"])
 end
 
 
