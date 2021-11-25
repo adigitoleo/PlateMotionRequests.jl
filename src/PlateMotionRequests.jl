@@ -14,6 +14,7 @@ using DelimitedFiles
 
 using DocStringExtensions
 using HTTP
+using TOML
 using TypedTables
 
 
@@ -111,7 +112,7 @@ end
 function _submit(request)
     return HTTP.post(
         "https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion/model",
-        [],  # Empty header.
+        ["User-Agent" => "PlateMotionRequests.jl/$(_pkgversion()) (Julia/$VERSION)"],
         HTTP.Form(request),
     )
 end
