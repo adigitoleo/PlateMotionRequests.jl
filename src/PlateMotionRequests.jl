@@ -12,9 +12,12 @@ export read_platemotion
 
 using DelimitedFiles
 
+using DataStructures
+using Dates
 using DocStringExtensions
 using HTTP
 using TOML
+using NCDatasets
 using TypedTables
 
 
@@ -209,9 +212,55 @@ The first line written is a tab-delimited header containing the column names.
 
 """
 function write_platemotion(file, table)
-    open(file, "w") do io
-        println(io, join(String.(columnnames(table)), '\t'))
-        writedlm(io, table, '\t')
+    if splitext(file)[2] == ".nc"
+        _write_netcdf(file, table)
+    else
+        open(file, "w") do io
+            println(io, join(String.(columnnames(table)), '\t'))
+            writedlm(io, table, '\t')
+        end
+    end
+end
+
+
+function _write_netcdf(file, table)
+    # Recommended NetCDF conventions are the CF conventions:
+    # <http://cfconventions.org/Data/cf-conventions/cf-conventions-1.9/cf-conventions.html>
+    meta = OrderedDict(
+        "Conventions" => "CF-1.8",
+        "title" => "Tectonic plate motions",
+        "institution" => "https://www.unavco.org/",
+        "source" => join(unique(table.model), ", "),
+        "history" => "[$(now())]: Created by PlateMotionRequests.jl $(_pkgversion())\n",
+        "references" => "See <https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html#references>",
+    )
+
+    speed_east = OrderedDict(
+        "units" => "mm/yr",
+        "long_name" => "Speed (east)",
+        "standard_name" => "speed_east",
+    )
+
+    speed_north = OrderedDict(
+        "units" => "mm/yr",
+        "long_name" => "Speed (north)",
+        "standard_name" => "speed_north",
+    )
+
+    plate_and_ref = OrderedDict(
+        "long_name" => "Plate and reference",
+        "standard_name" => "plate_and_reference",
+    )
+
+    lons = unique(table.lon)
+    lats = unique(table.lat)
+
+    NCDataset(file, "c", attrib = meta) do dataset
+        defDim(dataset, "lat", length(lats))
+        defDim(dataset, "lon", length(lons))
+        defVar(dataset, "v_east", Float32, ("lon", "lat"), attrib = speed_east)
+        defVar(dataset, "v_north", Float32, ("lon", "lat"), attrib = speed_north)
+        defVar(dataset, "plate", String, ("lon", "lat"), attrib = plate_and_ref)
     end
 end
 
