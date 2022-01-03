@@ -139,11 +139,11 @@ function _parse!(raw::HTTP.Response, format)
     table = _mktable(Format)
     for line in eachrow(readdlm(bytes, ' ', '\n'))
         line = line[line.!=""]
-        floats = line[isa.(line, Float64)]
-        ints = line[isa.(line, Int64)]
-        strings = line[isa.(line, SubString{String})]
-        plate_and_ref, model = strings[1], join(strings[2:end], ' ')
-        rowdata = Format(floats..., ints..., plate_and_ref, model)
+        meta_start = findfirst(x -> x isa AbstractString, line)
+        data = line[begin : meta_start - 1]
+        meta = line[meta_start : end]
+        plate_and_ref, model = meta[1], join(meta[2:end], ' ')
+        rowdata = Format(data..., plate_and_ref, model)
         push!(table, _mkrow(rowdata))
     end
     return table
