@@ -1,7 +1,9 @@
-"""Plate motion data requests using the [UNAVCO Plate Motion Calculator](https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html).
+"""Plate motion data requests using the [UNAVCO Plate Motion Calculator][1].
 
 Exported names:
 $(EXPORTS)
+
+[1]: https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html
 
 """
 module PlateMotionRequests
@@ -24,9 +26,12 @@ using TypedTables
 """
     platemotion(lats, lons, heights; kwargs...)
     platemotion(lats, lons; kwargs...)
-    platemotion(XYZ, kwargs...)
 
-Request plate motion data from the [UNAVCO Plate Motion Calculator](https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html). Headers and metadata are stripped from the output, which is parsed into a [`Table`](https://typedtables.juliadata.org/latest/man/table/). Accepts either separate vectors for latitude, longitude and optionally height. The XYZ input method is deprecated, and will be removed in the next release.
+Request plate motion data from the [UNAVCO Plate Motion Calculator][1].
+Headers and metadata are stripped from the output, which is parsed into a [`Table`][2].
+Accepts either separate vectors for latitude, longitude and optionally height.
+
+See also: [`write_platemotion`](@ref).
 
 !!! note
 
@@ -53,29 +58,22 @@ Optional arguments:
 - `ur_z`: See above.
 - `format`: Output format for the data section of the response, or ASCII by default.
 
+[1]: https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html.
+[2]: https://typedtables.juliadata.org/latest/man/table/
+
 """
 function platemotion(lats, lons, heights = fill(0, length(lats)); kwargs...)
-    request = _kwargparser(kwargs)
+    request = parse_kwargs(kwargs)
     push!(
         request,
         :geo =>
             join(mapslices(x -> join(x, " "), hcat(lons, lats, heights), dims = 2), ",\n"),
     )
-    return _parse!(_submit(request), request[:format])
-end
-
-function platemotion(XYZ; kwargs...)
-    X, Y, Z = XYZ
-    request = _kwargparser(kwargs)
-    push!(
-        request,
-        :xyz => join(mapslices(x -> join(x, " "), hcat(X, Y, Z), dims = 2), ",\n"),
-    )
-    return _parse!(_submit(request), request[:format])
+    return parse!(submit(request), request[:format])
 end
 
 
-function _kwargparser(kwargs::Base.Iterators.Pairs)
+function parse_kwargs(kwargs::Base.Iterators.Pairs)
     kwargs = Dict(kwargs)
     return Dict(
         :model => get(kwargs, :model, "gsrm_2014"),
@@ -93,35 +91,30 @@ function _kwargparser(kwargs::Base.Iterators.Pairs)
         :ur_x => String(get(kwargs, :ur_x, "")),
         :ur_y => String(get(kwargs, :ur_y, "")),
         :ur_z => String(get(kwargs, :ur_z, "")),
-        :format => :format in keys(kwargs) ? _validate_format(kwargs[:format]) : "ascii",
+        :format => :format in keys(kwargs) ? validate_format(kwargs[:format]) : "ascii",
     )
 end
 
 
-function _validate_format(format)
+function validate_format(format)
     supported_formats = ("ascii", "ascii_xyz", "psvelo")
     if !(format in supported_formats)
-        throw(
-            ArgumentError(
-                "`format` must be one of `$(supported_formats)`." *
-                " You've supplied `format = $(format)`.",
-            ),
-        )
+        throw(OptionError("format", supported_formats, format))
     end
     return String(format)
 end
 
 
-function _submit(request)
+function submit(request)
     return HTTP.post(
         "https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion/model",
-        ["User-Agent" => "PlateMotionRequests.jl/$(_pkgversion()) (Julia/$VERSION)"],
+        ["User-Agent" => "PlateMotionRequests.jl/$(pkgversion()) (Julia/$VERSION)"],
         HTTP.Form(request),
     )
 end
 
 
-function _parse!(raw::HTTP.Response, format)
+function parse!(raw::HTTP.Response, format)
     body = raw.body
     # Data is inside the <pre> tag.
     bytes = body[findfirst(b"<pre>", body)[end]+1:findfirst(b"</pre>", body)[1]-1]
@@ -129,28 +122,49 @@ function _parse!(raw::HTTP.Response, format)
     replace!(bytes, codepoint('\t') => UInt8('\n'))
 
     if format == "ascii"
-        Format = _FormatASCII
+        Format = FormatASCII
     elseif format == "ascii_xyz"
-        Format = _FormatASCIIxyz
+        Format = FormatASCIIxyz
     elseif format == "psvelo"
-        Format = _FormatPsvelo
+        Format = FormatPsvelo
     end
 
-    table = _mktable(Format)
-    for line in eachrow(readdlm(bytes, ' ', '\n'))
+    matrix = readdlm(bytes, ' ', '\n')
+    table = new_table(Format, size(matrix, 1))
+    for (index, line) in enumerate(eachrow(matrix))
         line = line[line.!=""]
         meta_start = findfirst(x -> x isa AbstractString, line)
-        data = line[begin : meta_start - 1]
-        meta = line[meta_start : end]
-        plate_and_ref, model = meta[1], join(meta[2:end], ' ')
-        rowdata = Format(data..., plate_and_ref, model)
-        push!(table, _mkrow(rowdata))
+        data = line[begin:meta_start-1]
+        meta = line[meta_start:end]
+        plate_and_reference, model = meta[1], decode_html(join(meta[2:end], ' '))
+        rowdata = Format(data..., plate_and_reference, model)
+        table[index] = as_row(rowdata)
     end
     return table
 end
 
 
-struct _FormatPsvelo
+"""
+    decode_html(text)
+
+Decode html-encoded ascii entities in `text`.
+Assumes that the trailing semicolon is alwaays present.
+
+"""
+function decode_html(text)
+    return replace(
+        text,
+        r"&lt;"i => "<",
+        r"&gt;"i => ">",
+        r"&apos;"i => "'",
+        r"&quot;"i => "\"",
+        r"&amp;"i => "&",
+        r"<br>" => " ",  # Dodgy <br> tags have been seen in the wild.
+    )
+end
+
+
+struct FormatPsvelo
     lon::Float64
     lat::Float64
     velocity_east::Float64
@@ -162,7 +176,7 @@ struct _FormatPsvelo
     model::String
 end
 
-struct _FormatASCII
+struct FormatASCII
     lon::Float64
     lat::Float64
     velocity_east::Float64
@@ -171,7 +185,7 @@ struct _FormatASCII
     model::String
 end
 
-struct _FormatASCIIxyz
+struct FormatASCIIxyz
     lon::Float64
     lat::Float64
     velocity_x::Float64
@@ -182,23 +196,63 @@ struct _FormatASCIIxyz
 end
 
 
-struct ParseError <: Exception
-    msg::AbstractString
+struct OptionError <: Exception
+    expected::Any
+    supplied::Any
+    msg::String
+    OptionError(name, expected, supplied) = new(
+        expected,
+        supplied,
+        "`$(name)` must be one of `$(expected)`. You've supplied `$(name) = $(supplied).",
+    )
 end
-ParseError() = ParseError("")
+
+struct ReadError <: Exception
+    msg::String
+end
+
+struct SamplingError <: Exception
+    supplied::Any
+    msg::String
+    SamplingError(name, supplied) =
+        new(supplied, "`$(name)` must contain regularly sampled values.")
+end
 
 
-function _mktable(t::DataType)
-    return Table(NamedTuple{fieldnames(t)}(type[] for type in fieldtypes(t)))
-end
-function _mktable(d::Matrix, t::DataType)
-    return Table(;
-        (colname => coldata for (colname, coldata) in zip(fieldnames(t), eachcol(d)))...,
+"""
+    new_table(T::DataType, nrows::Int = 0)
+
+Return a new [Table][1] using the column format defined by `T`.
+Use `nrows` to preallocate the number of rows using [`undef`](@ref).
+
+[1]: https://typedtables.juliadata.org/latest/man/table/
+
+"""
+function new_table(T::DataType, nrows::Int = 0)
+    return Table(
+        NamedTuple{fieldnames(T)}(Vector{type}(undef, nrows) for type in fieldtypes(T)),
     )
 end
 
 
-function _mkrow(x::Union{_FormatASCII,_FormatASCIIxyz,_FormatPsvelo})
+"""
+    as_table(T::DataType, d::Matrix)
+
+Return a [Table][1] of the data contained in `d`, using the column format defined by `T`.
+
+[1]: https://typedtables.juliadata.org/latest/man/table/
+
+"""
+function as_table(T::DataType, d::Matrix)
+    table = new_table(T, size(d, 1))
+    for (index, row) in enumerate(eachrow(d))
+        table[index] = as_row(T(row...))
+    end
+    return table
+end
+
+
+function as_row(x::Union{FormatASCII,FormatASCIIxyz,FormatPsvelo})
     fields = fieldnames(typeof(x))
     return NamedTuple{fields}((getfield(x, field) for field in fields))
 end
@@ -380,16 +434,16 @@ See [`platemotion`](@ref) for details.
 function read_platemotion(file)
     data, header = readdlm(file, '\t', Any, '\n', header = true)
     isformat(format) = Set(header) == Set(String.(fieldnames(format)))
-    if isformat(_FormatASCII)
-        table = _mktable(data, _FormatASCII)
-    elseif isformat(_FormatASCIIxyz)
-        table = _mktable(data, _FormatASCIIxyz)
-    elseif isformat(_FormatPsvelo)
-        table = _mktable(data, _FormatPsvelo)
+    if isformat(FormatASCII)
+        table = as_table(FormatASCII, data)
+    elseif isformat(FormatASCIIxyz)
+        table = as_table(FormatASCIIxyz, data)
+    elseif isformat(FormatPsvelo)
+        table = as_table(FormatPsvelo, data)
     else
         throw(
-            ParseError(
-                "columns in `file` must match a supported format." *
+            ReadError(
+                "columns in `$(file)` must match a supported format." *
                 " You've supplied a corrupt or unsupported file." *
                 " If possible, try to write the file again using `write_platemotion`.",
             ),
@@ -399,10 +453,9 @@ function read_platemotion(file)
 end
 
 
-function _pkgversion()
-    # <https://discourse.julialang.org/t/how-to-find-out-the-version-of-a-package-from-its-module/37755/11>
+function pkgversion()
     return VersionNumber(TOML.parsefile("$(@__DIR__)/../Project.toml")["version"])
 end
 
 
-end # PlateMotionRequests
+end # module PlateMotionRequests
