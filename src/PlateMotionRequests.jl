@@ -207,13 +207,20 @@ end
 """
     write_platemotion(file, table)
 
-Write plate motion table to `file` as tab-delimited text columns.
-The first line written is a tab-delimited header containing the column names.
+Write plate motion table to `file` as tab-delimited text columns or NetCDF.
+The NetCDF method will be used if `file` ends with a `.nc` extension.
+For tab-delimited output, the first line is a header containing the column names.
+
+!!! note
+
+    Irregular sampling of latitude or longitude values is not supported for NetCDF output.
+
+See also: [`read_platemotion`](@ref).
 
 """
 function write_platemotion(file, table)
     if splitext(file)[2] == ".nc"
-        _write_netcdf(file, table)
+        write_netcdf(file, table)
     else
         open(file, "w") do io
             println(io, join(String.(columnnames(table)), '\t'))
@@ -223,45 +230,141 @@ function write_platemotion(file, table)
 end
 
 
-function _write_netcdf(file, table)
+function write_netcdf(file, table)
+    latitudes = unique(table.lat)
+    longitudes = unique(table.lon)
+    # Ensure that the coordinates are regularly sampled.
+    # Irregular sampling is out of scope for this package, use interpolation as required.
+    latitude_step, longitude_step = verify_regularity(latitudes, longitudes)
+
     # Recommended NetCDF conventions are the CF conventions:
     # <http://cfconventions.org/Data/cf-conventions/cf-conventions-1.9/cf-conventions.html>
     meta = OrderedDict(
-        "Conventions" => "CF-1.8",
+        "Conventions" => "CF-1.9",
         "title" => "Tectonic plate motions",
         "institution" => "https://www.unavco.org/",
-        "source" => join(unique(table.model), ", "),
-        "history" => "[$(now())]: Created by PlateMotionRequests.jl $(_pkgversion())\n",
+        "source" => join(unique(table.model), ",\n "),
+        "history" => "[$(now())]: Created by PlateMotionRequests.jl $(pkgversion())\n",
         "references" => "See <https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html#references>",
+        "comment" => "Produced using https://git.sr.ht/~adigitoleo/PlateMotionRequests.jl\n",
     )
 
-    speed_east = OrderedDict(
-        "units" => "mm/yr",
-        "long_name" => "Speed (east)",
-        "standard_name" => "speed_east",
-    )
+    try
+        NCDataset(file, "c", attrib = meta) do nc
+            lat_extrema = write_dim(nc, "lat", latitudes, "Y", "degrees_north", "latitude")
+            lon_extrema = write_dim(nc, "lon", longitudes, "X", "degrees_east", "longitude")
 
-    speed_north = OrderedDict(
-        "units" => "mm/yr",
-        "long_name" => "Speed (north)",
-        "standard_name" => "speed_north",
-    )
-
-    plate_and_ref = OrderedDict(
-        "long_name" => "Plate and reference",
-        "standard_name" => "plate_and_reference",
-    )
-
-    lons = unique(table.lon)
-    lats = unique(table.lat)
-
-    NCDataset(file, "c", attrib = meta) do dataset
-        defDim(dataset, "lat", length(lats))
-        defDim(dataset, "lon", length(lons))
-        defVar(dataset, "v_east", Float32, ("lon", "lat"), attrib = speed_east)
-        defVar(dataset, "v_north", Float32, ("lon", "lat"), attrib = speed_north)
-        defVar(dataset, "plate", String, ("lon", "lat"), attrib = plate_and_ref)
+            for (name, col) in zip(columnnames(table), columns(table))
+                if name in (:lat, :lon)
+                    continue
+                else
+                    element_type = name in (:plate_and_reference, :model) ? String : Float64
+                    matrix =
+                        Matrix{element_type}(undef, length(latitudes), length(longitudes))
+                    for (index, cell) in enumerate(col)
+                        i = convert(Int, (table[index].lat - lat_extrema[1]) / latitude_step) + 1
+                        j = convert(Int, (table[index].lon - lon_extrema[1]) / longitude_step) + 1
+                        matrix[i, j] = cell
+                    end
+                    defVar(
+                        nc,
+                        String(name),
+                        matrix,
+                        ("lat", "lon"),
+                        attrib = attribute(name),
+                    )
+                end
+            end
+        end
+    catch
+        rm(file)
+        rethrow()
     end
+end
+
+
+"""
+    verify_regularity(x, y)
+
+Verify regularity of both input arrays and return a tuple of step sizes.
+
+"""
+function verify_regularity(x, y)
+    diff_x = diff(x)
+    diff_y = diff(y)
+
+    is_zero(x) = x == 0.0  # TODO: Add a small tolerance?
+    all(is_zero, diff(diff_x)) || throw(SamplingError("x", x))
+    all(is_zero, diff(diff_y)) || throw(SamplingError("y", y))
+
+    return diff_x[1], diff_y[1]
+end
+
+
+"""
+    attribute(colname::Symbol)
+
+Create initial NetCDF attribute dict for a data column.
+Construct standatd_name according to:
+<http://cfconventions.org/Data/cf-standard-names/docs/guidelines.html>
+
+"""
+function attribute(colname::Symbol)
+    names = (;
+        velocity_east = ("Eastward plate velocity", "eastward_plate_velocity"),
+        velocity_north = ("Northward plate velocity", "northward_plate_velocity"),
+        err_east = (
+            "Eastward plate velocity uncertainty",
+            "eastward_plate_velocity standard_error",
+        ),
+        err_north = (
+            "Northward plate velocity uncertainty",
+            "northward_plate_velocity standard_error",
+        ),
+        correlation_NE = (
+            "North-east velocity correlation",
+            "correlation_of_northward_plate_velocity_and_eastward_plate_velocity",
+        ),
+        velocity_x = ("Velocity in the WGS-84 X-direction", "plate_x_velocity"),
+        velocity_y = ("Velocity in the WGS-84 Y-direction", "plate_y_velocity"),
+        velocity_z = ("Velocity in the WGS-84 Z-direction", "plate_z_velocity"),
+        plate_and_reference = ("Local plate and reference plate", "plate_and_reference"),
+        model = ("Plate tectonic model", "source"),
+    )
+
+    long_name, standard_name = getproperty(names, colname)
+    d = OrderedDict("long_name" => long_name, "standard_name" => standard_name)
+    if !(colname in (:plate_and_reference, :model))
+        d["units"] = "mm/yr"
+        d["ancillary_variables"] = "plate_and_reference model"
+    end
+    return d
+end
+
+
+"""
+    write_dim(ds::NCDataset, name, samples, axis, units, standard_name)
+
+Write a CF-compliant NetCDF dimension to an open NCDataset.
+Returns a tuple containing the [`extrema`](@ref) of `samples`.
+
+"""
+function write_dim(ds::NCDataset, name, samples, axis, units, standard_name)
+    defDim(ds, name, length(samples))
+    min_sample, max_sample = extrema(samples)
+    defVar(
+        ds,
+        name,
+        samples,
+        (name,),
+        attrib = OrderedDict(
+            "units" => units,
+            "axis" => axis,
+            "actual_range" => "[$(min_sample), $(max_sample)]",
+            "standard_name" => standard_name,
+        ),
+    )
+    return min_sample, max_sample
 end
 
 
