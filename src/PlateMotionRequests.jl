@@ -12,8 +12,12 @@ export read_platemotion
 
 using DelimitedFiles
 
+using DataStructures
+using Dates
 using DocStringExtensions
 using HTTP
+using TOML
+using NCDatasets
 using TypedTables
 
 
@@ -111,7 +115,7 @@ end
 function _submit(request)
     return HTTP.post(
         "https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion/model",
-        [],  # Empty header.
+        ["User-Agent" => "PlateMotionRequests.jl/$(_pkgversion()) (Julia/$VERSION)"],
         HTTP.Form(request),
     )
 end
@@ -135,11 +139,11 @@ function _parse!(raw::HTTP.Response, format)
     table = _mktable(Format)
     for line in eachrow(readdlm(bytes, ' ', '\n'))
         line = line[line.!=""]
-        floats = line[isa.(line, Float64)]
-        ints = line[isa.(line, Int64)]
-        strings = line[isa.(line, SubString{String})]
-        plate_and_ref, model = strings[1], join(strings[2:end], ' ')
-        rowdata = Format(floats..., ints..., plate_and_ref, model)
+        meta_start = findfirst(x -> x isa AbstractString, line)
+        data = line[begin : meta_start - 1]
+        meta = line[meta_start : end]
+        plate_and_ref, model = meta[1], join(meta[2:end], ' ')
+        rowdata = Format(data..., plate_and_ref, model)
         push!(table, _mkrow(rowdata))
     end
     return table
@@ -205,13 +209,58 @@ end
 
 Write plate motion table to `file` as tab-delimited text columns.
 The first line written is a tab-delimited header containing the column names.
-Note that the first header column is a comment marker (`#`), not a column name.
 
 """
 function write_platemotion(file, table)
-    open(file, "w") do io
-        writedlm(io, [append!(["#"], String.(columnnames(table)))])
-        writedlm(io, table)
+    if splitext(file)[2] == ".nc"
+        _write_netcdf(file, table)
+    else
+        open(file, "w") do io
+            println(io, join(String.(columnnames(table)), '\t'))
+            writedlm(io, table, '\t')
+        end
+    end
+end
+
+
+function _write_netcdf(file, table)
+    # Recommended NetCDF conventions are the CF conventions:
+    # <http://cfconventions.org/Data/cf-conventions/cf-conventions-1.9/cf-conventions.html>
+    meta = OrderedDict(
+        "Conventions" => "CF-1.8",
+        "title" => "Tectonic plate motions",
+        "institution" => "https://www.unavco.org/",
+        "source" => join(unique(table.model), ", "),
+        "history" => "[$(now())]: Created by PlateMotionRequests.jl $(_pkgversion())\n",
+        "references" => "See <https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html#references>",
+    )
+
+    speed_east = OrderedDict(
+        "units" => "mm/yr",
+        "long_name" => "Speed (east)",
+        "standard_name" => "speed_east",
+    )
+
+    speed_north = OrderedDict(
+        "units" => "mm/yr",
+        "long_name" => "Speed (north)",
+        "standard_name" => "speed_north",
+    )
+
+    plate_and_ref = OrderedDict(
+        "long_name" => "Plate and reference",
+        "standard_name" => "plate_and_reference",
+    )
+
+    lons = unique(table.lon)
+    lats = unique(table.lat)
+
+    NCDataset(file, "c", attrib = meta) do dataset
+        defDim(dataset, "lat", length(lats))
+        defDim(dataset, "lon", length(lons))
+        defVar(dataset, "v_east", Float32, ("lon", "lat"), attrib = speed_east)
+        defVar(dataset, "v_north", Float32, ("lon", "lat"), attrib = speed_north)
+        defVar(dataset, "plate", String, ("lon", "lat"), attrib = plate_and_ref)
     end
 end
 
@@ -220,15 +269,14 @@ end
     read_platemotion(file)
 
 Read tab-delimited plate motion data from `file`.
-Expects a single tab-delimited header line (starting with a comment marker),
+Expects a single tab-delimited header line,
 with column names that match one of the supported formats.
 See [`platemotion`](@ref) for details.
 
 """
 function read_platemotion(file)
     data, header = readdlm(file, '\t', Any, '\n', header = true)
-    # First cell of the header is the comment marker.
-    isformat(format) = Set(header[2:end]) == Set(String.(fieldnames(format)))
+    isformat(format) = Set(header) == Set(String.(fieldnames(format)))
     if isformat(_FormatASCII)
         table = _mktable(data, _FormatASCII)
     elseif isformat(_FormatASCIIxyz)
