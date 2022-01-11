@@ -101,6 +101,7 @@ function validate_format(format)
     if !(format in supported_formats)
         throw(OptionError("format", supported_formats, format))
     end
+    # Get canonical String from potentially exotic string types, e.g. SubString.
     return String(format)
 end
 
