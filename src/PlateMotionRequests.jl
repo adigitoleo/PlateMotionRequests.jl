@@ -263,7 +263,7 @@ end
     write_platemotion(file, table)
 
 Write plate motion table to `file` as tab-delimited text columns or NetCDF.
-The NetCDF method will be used if `file` ends with a `.nc` extension.
+The **experimental** NetCDF method will be used if `file` ends with a `.nc` extension.
 For tab-delimited output, the first line is a header containing the column names.
 
 !!! note
