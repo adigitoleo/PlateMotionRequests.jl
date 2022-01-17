@@ -317,8 +317,16 @@ function write_netcdf(file, table)
                     matrix =
                         Matrix{element_type}(undef, length(latitudes), length(longitudes))
                     for (index, cell) in enumerate(col)
-                        i = convert(Int, (table[index].lat - lat_extrema[1]) / latitude_step) + 1
-                        j = convert(Int, (table[index].lon - lon_extrema[1]) / longitude_step) + 1
+                        i =
+                            convert(
+                                Int,
+                                (table[index].lat - lat_extrema[1]) / latitude_step,
+                            ) + 1
+                        j =
+                            convert(
+                                Int,
+                                (table[index].lon - lon_extrema[1]) / longitude_step,
+                            ) + 1
                         matrix[i, j] = cell
                     end
                     defVar(
