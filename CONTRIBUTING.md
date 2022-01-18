@@ -86,6 +86,9 @@ so stable releases might skip a few tags.
 Online documentation is only built for stable versions,
 so releasing stable versions requires administrator access to the online GitHub repository.
 
+The provided pre-commit hook script can be used to verify the last git tag
+against `Project.toml`.
+
 ### Releasing a new version on `next` (unstable)
 
 1. Update `Project.toml` with the new version number.
@@ -98,10 +101,6 @@ so releasing stable versions requires administrator access to the online GitHub 
 8. Commit the changes to `next` with a message like `Prepare release v<version>`.
 9. Create an annotated git tag with `git tag -am "Version <version>" v<version>`.
 10. Push `next` to all remotes (with `--follow-tags`).
-
-Some of the above steps are automated in `tools/make-next.jl`.
-The script requires [ArgParse.jl](https://github.com/carlobaldassi/ArgParse.jl) and
-[JuliaFormatter](https://github.com/domluna/JuliaFormatter.jl).
 
 ### Releasing a new version on `main` (stable)
 
