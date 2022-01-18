@@ -72,10 +72,57 @@ NamedTuple{(:lon, :lat, :velocity_east, :velocity_north, :plate_and_reference, :
 For more advanced manipulations, refer to the documentation for `TypedTables` and `Table`.
 
 
-## Plotting plate motion on a map using GMT
+## Plate motion map using GMT.jl
 
 To plot the plate motion using [GMT](https://www.generic-mapping-tools.org/)
-we need to save the data to a file:
+we can use the [GMT.jl](https://github.com/GenericMappingTools/GMT.jl) package.
+Let's also save the data so we can come back and adjust the plot later.
+The NetCDF writer could be used here, because it automatically puts the data into matrices.
+This will be convenient for plotting with GMT.
+
+```julia
+julia> write_platemotion("platemotion.nc", GSRMdata)
+```
+
+To read the NetCDF file, the [NCDatasets.jl](https://github.com/Alexander-Barth/NCDatasets.jl)
+package is recommended. These commands should plot the data as vectors on a map:
+
+```julia
+julia> using GMT
+
+julia> using NCDatasets
+
+julia> ds = NCDataset("platemotion.nc")
+
+julia> coast(
+           region = (110, 210, -35, 45),
+           projection = :Mercator,
+           frame = :auto,
+           land = :dimgray,
+           water = :darkgray,
+           shore = :thinner,
+       )
+
+julia> grdvector!(
+           mat2grid(ds["velocity_east"][:], x = ds["lon"][:], y = ds["lat"][:]),
+           mat2grid(ds["velocity_north"][:], x = ds["lon"][:], y = ds["lat"][:]),
+           arrow = (; shape = 0, stop = true, length = 0.2, angle = 45, pen = :white),
+           fill = :white,
+           vec_scale = 100,
+           linecolor = :white,
+           linewidth = :thinner,
+           show = true,
+       )
+
+```
+
+![](assets/platemotion_GMTjl.png)
+
+
+## Plate motion map using GMT
+
+If the GMT.jl package isn't working, well... help us fix it!
+But if you really want to use command line GMT, just save the data to a text file:
 
 ```julia
 julia> write_platemotion("platemotion.dat", GSRMdata)
@@ -83,6 +130,7 @@ julia> write_platemotion("platemotion.dat", GSRMdata)
 
 This example GMT script should plot the data as vectors on a map.
 In general, the scaling parameters will need to be adjusted depending on the map size.
+You might also need to re-download the data using `format = "psvelo"`.
 
 ```sh
 #!/bin/sh

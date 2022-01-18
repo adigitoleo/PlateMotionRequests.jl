@@ -1,10 +1,10 @@
 # PlateMotionRequests
 
-A Julia package for plate motion data requests using the [UNAVCO Plate Motion Calculator][server].
+A Julia package for plate motion data requests using the UNAVCO Plate Motion Calculator[^server].
 
-The package is open source, and [the code is available][repo] for free
-under the [Zero-Clause BSD license][license].
-There is also a website with [online documentation][docs].
+The package is open source, and the code is available[^repo] for free
+under the Zero-Clause BSD license[^license].
+There is also a website with online documentation[^docs].
 
 **Versions prior to `2.0.1` were experimental and should be avoided if possible.**
 
@@ -15,7 +15,8 @@ From the Julia shell, switch to package mode with `]` and run
 
     add https://git.sr.ht/~adigitoleo/PlateMotionRequests.jl
 
-For advanced packaging instructions, refer to the [Julia Pkg docs].
+For advanced packaging instructions,
+refer to the [Julia Pkg docs](https://docs.julialang.org/en/v1/stdlib/Pkg/).
 
 
 ## Usage
@@ -40,7 +41,8 @@ the `Serialization` module from Julia's standard library may prove useful.
 Other formats like HDF5 or ASDF may be preferred,
 depending on your requirements.
 
-Responses are tabulated using [TypedTables.jl][TypedTables.jl], e.g.:
+Responses are tabulated using [TypedTables.jl](https://typedtables.juliadata.org/latest/),
+e.g.:
 
     Table with 6 columns and 25 rows:
           lon    lat    velocity_east  velocity_north  plate_and_reference  model
@@ -77,19 +79,16 @@ You may also want to refer to the UNAVCO website linked above.
 
 Please use the public mailing list for feedback and discussion:
 
-[~adigitoleo/platemotionrequests.jl-devel@lists.sr.ht][list].
+[~adigitoleo/platemotionrequests.jl-devel@lists.sr.ht](mailto:~adigitoleo/platemotionrequests.jl-devel@lists.sr.ht)
 
 Contributions are handled via patches sent to the same mailing list.
-Contributor guidelines are provided with the [source code repository][repo] (in the file `CONTRIBUTING.md`).
+Contributor guidelines are provided with the source code repository[^repo] (in the file `CONTRIBUTING.md`).
 The file `TODO.md` lists some ideas for planned features.
 If you want to work on one of them,
 send an email first to check if an implementation is already underway.
 
 
-[server]: https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html
-[repo]: https://git.sr.ht/~adigitoleo/PlateMotionRequests.jl
-[license]: https://git.sr.ht/~adigitoleo/PlateMotionRequests.jl/blob/main/LICENSE
-[docs]: https://adigitoleo.github.io/PlateMotionRequests.jl/
-[Julia Pkg docs]:  https://docs.julialang.org/en/v1/stdlib/Pkg/
-[TypedTables.jl]: https://typedtables.juliadata.org/latest/
-[list]: mailto:~adigitoleo/platemotionrequests.jl-devel@lists.sr.ht
+[^repo]: <https://git.sr.ht/~adigitoleo/PlateMotionRequests.jl>
+[^license]: <https://git.sr.ht/~adigitoleo/PlateMotionRequests.jl/blob/main/LICENSE>
+[^docs]: <https://adigitoleo.github.io/PlateMotionRequests.jl/>
+[^server]: <https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html>
