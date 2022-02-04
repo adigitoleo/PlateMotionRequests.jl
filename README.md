@@ -1,11 +1,10 @@
 # PlateMotionRequests
 
-A Julia package for plate motion data requests using the [UNAVCO Plate Motion Calculator](https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html).
+A Julia package for plate motion data requests using the UNAVCO Plate Motion Calculator[^server].
 
-The package is open source,
-and [the code is available](https://git.sr.ht/~adigitoleo/PlateMotionRequests.jl)
-for free under the Zero-Clause BSD license.
-There is also a website with [online documentation](https://adigitoleo.github.io/PlateMotionRequests.jl/).
+The package is open source, and the code is available[^repo] for free
+under the Zero-Clause BSD license[^license].
+There is also a website with online documentation[^docs].
 
 **Versions prior to `2.0.1` were experimental and should be avoided if possible.**
 
@@ -16,7 +15,8 @@ From the Julia shell, switch to package mode with `]` and run
 
     add https://git.sr.ht/~adigitoleo/PlateMotionRequests.jl
 
-For advanced packaging instructions, refer to <https://docs.julialang.org/en/v1/stdlib/Pkg/>.
+For advanced packaging instructions,
+refer to the [Julia Pkg docs](https://docs.julialang.org/en/v1/stdlib/Pkg/).
 
 
 ## Usage
@@ -34,12 +34,15 @@ For advanced packaging instructions, refer to <https://docs.julialang.org/en/v1/
 
 Data can be written to/read from storage using `write_platemotion` and `read_platemotion`.
 These functions write/read simple tab-delimited text files.
+By using the `.nc` file extension, you can tell `write_platemotion` to use
+an experimental NetCDF output format.
 To store binary representations,
 the `Serialization` module from Julia's standard library may prove useful.
-Robust formats like NetCDF, HDF5 or ASDF may be preferred,
+Other formats like HDF5 or ASDF may be preferred,
 depending on your requirements.
 
-Responses are tabulated using [TypedTables.jl](https://typedtables.juliadata.org/latest/), e.g.:
+Responses are tabulated using [TypedTables.jl](https://typedtables.juliadata.org/latest/),
+e.g.:
 
     Table with 6 columns and 25 rows:
           lon    lat    velocity_east  velocity_north  plate_and_reference  model
@@ -60,6 +63,7 @@ Responses are tabulated using [TypedTables.jl](https://typedtables.juliadata.org
 
 Change the model and reference frame using the `model` and `reference` keywords,
 respectively. For a no-net-rotation frame, use the value `"NNR"` (default).
+The `model` argument accepts the value `"all"`, to query all available models for the data.
 
 Change output formats using the `format` keyword.
 The supported output formats are `"ascii"` (default),
@@ -78,7 +82,13 @@ Please use the public mailing list for feedback and discussion:
 [~adigitoleo/platemotionrequests.jl-devel@lists.sr.ht](mailto:~adigitoleo/platemotionrequests.jl-devel@lists.sr.ht)
 
 Contributions are handled via patches sent to the same mailing list.
-Contributor guidelines are provided with the [source code repository](https://git.sr.ht/~adigitoleo/PlateMotionRequests.jl) (in the file `CONTRIBUTING.md`).
+Contributor guidelines are provided with the source code repository[^repo] (in the file `CONTRIBUTING.md`).
 The file `TODO.md` lists some ideas for planned features.
 If you want to work on one of them,
 send an email first to check if an implementation is already underway.
+
+
+[^repo]: <https://git.sr.ht/~adigitoleo/PlateMotionRequests.jl>
+[^license]: <https://git.sr.ht/~adigitoleo/PlateMotionRequests.jl/blob/main/LICENSE>
+[^docs]: <https://adigitoleo.github.io/PlateMotionRequests.jl/>
+[^server]: <https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html>

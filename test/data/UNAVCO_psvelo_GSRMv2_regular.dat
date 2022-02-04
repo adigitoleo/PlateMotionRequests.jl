@@ -1,0 +1,47 @@
+	<html>
+	<head></head>
+	<body>
+	<left><b><font size=+1 face="Arial, Helvetica">UNAVCO Plate Motion Calculator</font></b></left>
+	<br />
+	<left><b><font size=+1 face="Arial, Helvetica">Output:</font></b></left>
+	<br /><br />
+	<p>
+	</p>
+	<font face="Arial, Helvetica">
+	<a href="http://gmt.soest.hawaii.edu">GMT</a>&nbsp;&nbsp;<a href="http://gmt.soest.hawaii.edu/gmt/doc/gmt/html/man/psvelo.html"><i>psvelo</i></a> format:
+	<br />
+	Lon(&deg;E) Lat(&deg;N) Evel(mm/yr) Nvel(mm/yr) Eerr Nerr corr Plate(Reference) Model Site
+	</font>
+	<br />
+	<p>
+	<pre>
+ 110.000000 -35.000000   41.58   56.94 0 0 0 AU(NNR) GSRM v2.1 
+ 110.000000 -25.000000   42.45   56.97 0 0 0 AU(NNR) GSRM v2.1 
+ 110.000000 -15.000000   42.03   56.99 0 0 0 AU(NNR) GSRM v2.1 
+ 110.000000  -5.000000   23.36   -7.34 0 0 0 EU(NNR) GSRM v2.1 
+ 110.000000   5.000000   26.03   -7.34 0 0 0 EU(NNR) GSRM v2.1 
+ 110.000000  15.000000   27.92   -7.34 0 0 0 EU(NNR) GSRM v2.1 
+ 110.000000  25.000000   28.97   -7.34 0 0 0 EU(NNR) GSRM v2.1 
+ 110.000000  35.000000   29.15   -7.34 0 0 0 EU(NNR) GSRM v2.1 
+ 110.000000  45.000000   28.43   -7.33 0 0 0 EU(NNR) GSRM v2.1 
+ 120.000000 -35.000000   35.79   58.98 0 0 0 AU(NNR) GSRM v2.1 
+ 120.000000 -25.000000   38.18   59.01 0 0 0 AU(NNR) GSRM v2.1 
+ 120.000000 -15.000000   39.42   59.03 0 0 0 AU(NNR) GSRM v2.1 
+ 120.000000  -5.000000   23.49   -9.92 0 0 0 EU(NNR) GSRM v2.1 
+ 120.000000   5.000000   25.90   -9.92 0 0 0 EU(NNR) GSRM v2.1 
+ 120.000000  15.000000   27.54   -9.91 0 0 0 EU(NNR) GSRM v2.1 
+ 120.000000  25.000000   28.34   -9.91 0 0 0 EU(NNR) GSRM v2.1 
+ 120.000000  35.000000   28.28   -9.91 0 0 0 EU(NNR) GSRM v2.1 
+ 120.000000  45.000000   27.37   -9.90 0 0 0 EU(NNR) GSRM v2.1 
+	</pre>
+	</p>
+	<button onclick="goBack()">Go Back</button>
+        <script>
+            function goBack() {
+              window.history.back();
+            }
+        </script>
+	</body>
+	</head>
+	</html>
+

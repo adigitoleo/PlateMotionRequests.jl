@@ -1,0 +1,45 @@
+	<html>
+	<head></head>
+	<body>
+	<left><b><font size=+1 face="Arial, Helvetica">UNAVCO Plate Motion Calculator</font></b></left>
+	<br />
+	<left><b><font size=+1 face="Arial, Helvetica">Output:</font></b></left>
+	<br /><br />
+	<p>
+	</p>
+	<font face="Arial, Helvetica">
+	Lon(&deg;E) Lat(&deg;N) Xvel(mm/yr) Yvel(mm/yr)) Zvel(mm/yr)  Plate(Reference) Model Site
+	</font>
+	<br />
+	<p>
+	<pre>
+ 110.000000 -35.000000  -50.19   16.33   46.75  AU(NNR) GSRM v2.1 
+ 110.000000 -25.000000  -48.08    7.98   51.69  AU(NNR) GSRM v2.1 
+ 110.000000 -15.000000  -44.51   -0.60   55.07  AU(NNR) GSRM v2.1 
+ 110.000000  -5.000000  -21.73   -8.59   -7.32  EU(NNR) GSRM v2.1 
+ 110.000000   5.000000  -24.68   -8.31   -7.32  EU(NNR) GSRM v2.1 
+ 110.000000  15.000000  -26.89   -7.78   -7.10  EU(NNR) GSRM v2.1 
+ 110.000000  25.000000  -28.28   -7.01   -6.66  EU(NNR) GSRM v2.1 
+ 110.000000  35.000000  -28.82   -6.03   -6.02  EU(NNR) GSRM v2.1 
+ 110.000000  45.000000  -28.49   -4.87   -5.20  EU(NNR) GSRM v2.1 
+ 120.000000 -35.000000  -47.83   11.27   48.42  AU(NNR) GSRM v2.1 
+ 120.000000 -25.000000  -45.47    2.39   53.55  AU(NNR) GSRM v2.1 
+ 120.000000 -15.000000  -41.73   -6.56   57.05  AU(NNR) GSRM v2.1 
+ 120.000000  -5.000000  -19.91  -12.49   -9.88  EU(NNR) GSRM v2.1 
+ 120.000000   5.000000  -22.86  -12.21   -9.88  EU(NNR) GSRM v2.1 
+ 120.000000  15.000000  -25.12  -11.56   -9.58  EU(NNR) GSRM v2.1 
+ 120.000000  25.000000  -26.62  -10.56   -8.99  EU(NNR) GSRM v2.1 
+ 120.000000  35.000000  -27.32   -9.24   -8.13  EU(NNR) GSRM v2.1 
+ 120.000000  45.000000  -27.19   -7.64   -7.02  EU(NNR) GSRM v2.1 
+	</pre>
+	</p>
+	<button onclick="goBack()">Go Back</button>
+        <script>
+            function goBack() {
+              window.history.back();
+            }
+        </script>
+	</body>
+	</head>
+	</html>
+
