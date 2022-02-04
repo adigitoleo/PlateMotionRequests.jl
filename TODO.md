@@ -5,6 +5,7 @@
 - More tests
 - Rate limits? Prevent accidental spamming of requests to the server.
 - Caching?
+- Use `strip` in `read_platemotion` to be able to read vertically aligned columns
 
 ## Out of scope
 
