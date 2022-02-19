@@ -757,7 +757,7 @@ function create_mock_tables()
 end
 
 
-@testset "platemotion" begin
+@testset "response parsing" begin
     # Test format validation
     for val in (42, "a", 'a', "ASCII")
         @test_throws _pmr.OptionError _pmr.validate_format(val)
@@ -787,10 +787,53 @@ end
     @test _pmr.parse!(psvelo_gsrm_regular, "psvelo") == mock_psvelo_gsrm_regular
 end
 
-@testset "write_platemotion" begin
-    # TODO
-end
+@testset "I/O" begin
+    filename(name) = joinpath(@__DIR__(), name)
+    mock_ascii_all_models_irregular,
+    mock_ascii_gsrm_regular,
+    mock_ascii_xyz_gsrm_regular,
+    mock_psvelo_gsrm_regular = create_mock_tables()
 
-@testset "read_platemotion" begin
-    # TODO
+    @testset "text files" begin
+        try
+            write_platemotion(
+                filename("ASCII_all_models_irregular.dat"),
+                mock_ascii_all_models_irregular,
+            )
+            @test read_platemotion(filename("ASCII_all_models_irregular.dat")) ==
+                  mock_ascii_all_models_irregular
+            write_platemotion(filename("ASCII_GSRMv2_regular.dat"), mock_ascii_gsrm_regular)
+            @test read_platemotion(filename("ASCII_GSRMv2_regular.dat")) ==
+                  mock_ascii_gsrm_regular
+            write_platemotion(
+                filename("ASCII_XYZ_GSRMv2_regular.dat"),
+                mock_ascii_xyz_gsrm_regular,
+            )
+            @test read_platemotion(filename("ASCII_XYZ_GSRMv2_regular.dat")) ==
+                  mock_ascii_xyz_gsrm_regular
+            write_platemotion(
+                filename("psvelo_GSRMv2_regular.dat"),
+                mock_psvelo_gsrm_regular,
+            )
+            @test read_platemotion(filename("psvelo_GSRMv2_regular.dat")) ==
+                  mock_psvelo_gsrm_regular
+            writedlm(filename("malformed.dat"), Table(a = [1], b = [1]), '\t')
+            @test_throws _pmr.ReadError read_platemotion(filename("malformed.dat"))
+            @test_throws _pmr.WriteError write_platemotion(
+                filename("tmp.dat"),
+                Table(a = [1], b = [1]),
+            )
+        finally
+            rm(filename("tmp.dat"), force = true)
+            rm(filename("ASCII_all_models_irregular.dat"), force = true)
+            rm(filename("ASCII_GSRMv2_regular.dat"), force = true)
+            rm(filename("ASCII_XYZ_GSRMv2_regular.dat"), force = true)
+            rm(filename("psvelo_GSRMv2_regular.dat"), force = true)
+            rm(filename("malformed.dat"), force = true)
+        end
+    end
+
+    @testset "NetCDF" begin
+        # TODO
+    end
 end
