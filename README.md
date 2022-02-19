@@ -11,6 +11,9 @@ There is also a website with [online documentation](https://adigitoleo.github.io
 
 ## Installation
 
+This package currently requires Julia 1.7.2 or above.
+CI status (Linux): [![builds.sr.ht status](https://builds.sr.ht/~adigitoleo/PlateMotionRequests.jl.svg)](https://builds.sr.ht/~adigitoleo/PlateMotionRequests.jl?)
+
 From the Julia shell, switch to package mode with `]` and run
 
     add https://git.sr.ht/~adigitoleo/PlateMotionRequests.jl

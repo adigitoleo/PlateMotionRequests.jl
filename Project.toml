@@ -3,6 +3,9 @@ uuid = "d13234e1-ff52-466f-9770-1615bbbda812"
 authors = ["adigitoleo <adigitoleo@dissimulo.com>"]
 version = "3.0.0"
 
+[compat]
+julia = "1.7.2"
+
 [deps]
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
