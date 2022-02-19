@@ -1,10 +1,21 @@
 image: ubuntu/lts
-packages:
-    - julia
 tasks:
+    - prepare: |
+        cd PlateMotionRequests.jl
+        JULIA_VERSION='1.6.5'
+        JULIA_VERSION_SHORT='1.6'
+        wget "https://julialang-s3.julialang.org/bin/linux/x64/$JULIA_VERSION_SHORT/julia-$JULIA_VERSION-linux-x86_64.tar.gz"
+        wget "https://julialang-s3.julialang.org/bin/linux/x64/$JULIA_VERSION_SHORT/julia-$JULIA_VERSION-linux-x86_64.tar.gz.asc"
+        wget https://julialang.org/assets/juliareleases.asc
+        wget "https://julialang-s3.julialang.org/bin/checksums/julia-$JULIA_VERSION.sha256"
+        sha256sum -c --ignore-missing "julia-$JULIA_VERSION.sha256"
+        gpg --import juliareleases.asc
+        gpg --verify "julia-$JULIA_VERSION-linux-x86_64.tar.gz.asc"
+        tar -xf "julia-$JULIA_VERSION-linux-x86_64.tar.gz"
+        ln -s "julia-$JULIA_VERSION/bin/julia"
     - build: |
         cd PlateMotionRequests.jl
-        julia --project -e 'using Pkg; Pkg.instantiate()'
+        ./julia --project -e 'using Pkg; Pkg.instantiate()'
     - test: |
         cd PlateMotionRequests.jl
-        julia --project test/runtests.jl
+        ./julia --project test/runtests.jl
