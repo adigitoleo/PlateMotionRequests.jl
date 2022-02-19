@@ -1,10 +1,10 @@
 # PlateMotionRequests
 
-A Julia package for plate motion data requests using the UNAVCO Plate Motion Calculator[^server].
+A Julia package for plate motion data requests using the [UNAVCO Plate Motion Calculator](https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html).
 
-The package is open source, and the code is available[^repo] for free
-under the Zero-Clause BSD license[^license].
-There is also a website with online documentation[^docs].
+The package is open source, and the [code is available](https://git.sr.ht/~adigitoleo/PlateMotionRequests.jl)
+under the [Zero-Clause BSD license](https://git.sr.ht/~adigitoleo/PlateMotionRequests.jl/blob/main/LICENSE).
+There is also a website with [online documentation](https://adigitoleo.github.io/PlateMotionRequests.jl/).
 
 **Versions prior to `2.0.1` were experimental and should be avoided if possible.**
 
@@ -82,13 +82,7 @@ Please use the public mailing list for feedback and discussion:
 [~adigitoleo/platemotionrequests.jl-devel@lists.sr.ht](mailto:~adigitoleo/platemotionrequests.jl-devel@lists.sr.ht)
 
 Contributions are handled via patches sent to the same mailing list.
-Contributor guidelines are provided with the source code repository[^repo] (in the file `CONTRIBUTING.md`).
+Contributor guidelines are provided with the source code repository (in the file `CONTRIBUTING.md`).
 The file `TODO.md` lists some ideas for planned features.
 If you want to work on one of them,
 send an email first to check if an implementation is already underway.
-
-
-[^repo]: <https://git.sr.ht/~adigitoleo/PlateMotionRequests.jl>
-[^license]: <https://git.sr.ht/~adigitoleo/PlateMotionRequests.jl/blob/main/LICENSE>
-[^docs]: <https://adigitoleo.github.io/PlateMotionRequests.jl/>
-[^server]: <https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html>
