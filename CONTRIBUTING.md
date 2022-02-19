@@ -83,11 +83,8 @@ Each component should consist of no more than two lines. For example:
 Version releases should adhere to [semantic versioning](https://semver.org/).
 Code that is on `next` may undergo a few patch version increments before making it to `main`,
 so stable releases might skip a few tags.
-Online documentation is only built for stable versions,
-so releasing stable versions requires administrator access to the online GitHub repository.
-
-The provided pre-commit hook script can be used to verify the last git tag
-against `Project.toml`.
+Online documentation is only built for stable versions.
+Releasing new versions requires admin access to the GitHub repository.
 
 ### Releasing a new version on `next` (unstable)
 
@@ -99,13 +96,16 @@ against `Project.toml`.
 6. If the changelog is larger than 1MB, split off a `changelog-<version_range>.md` for old versions.
 7. Run [JuliaFormatter](https://github.com/domluna/JuliaFormatter.jl) on the entire `src/` tree.
 8. Commit the changes to `next` with a message like `Prepare release v<version>`.
-9. Create an annotated git tag with `git tag -am "Version <version>" v<version>`.
-10. Push `next` to all remotes (with `--follow-tags`).
+9. DON'T CREATE A GIT TAG, tagging must be done after package registration (stable).
+10. Push `next` to all remotes.
 
 ### Releasing a new version on `main` (stable)
 
 Once a release is considered stable enough, it can be merged onto `main` from `next`.
-Then the HTML documentation also needs to be built.
+Then the package can be registered, and the HTML documentation also needs to be built.
+To register a new version, follow the instructions for [Registrator.jl](https://github.com/JuliaRegistries/Registrator.jl).
+**Remember to create and push an annotated git tag with the version number after registration.**
+Only build the documentation after successful registration.
 Starting on `main`:
 
 1. Create a documentation branch with `git switch -c gh-pages-<version>`; **all remaining steps are to be performed on this branch**.
