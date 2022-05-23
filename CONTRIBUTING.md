@@ -83,11 +83,8 @@ Each component should consist of no more than two lines. For example:
 Version releases should adhere to [semantic versioning](https://semver.org/).
 Code that is on `next` may undergo a few patch version increments before making it to `main`,
 so stable releases might skip a few tags.
-Online documentation is only built for stable versions,
-so releasing stable versions requires administrator access to the online GitHub repository.
-
-The provided pre-commit hook script can be used to verify the last git tag
-against `Project.toml`.
+Online documentation is only built for stable versions.
+Releasing new versions requires admin access to the GitHub repository.
 
 ### Releasing a new version on `next` (unstable)
 

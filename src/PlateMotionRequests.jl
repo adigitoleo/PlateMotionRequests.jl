@@ -212,6 +212,10 @@ struct ReadError <: Exception
     msg::String
 end
 
+struct WriteError <: Exception
+    msg::String
+end
+
 struct SamplingError <: Exception
     supplied::Any
     msg::String
@@ -266,6 +270,9 @@ Write plate motion table to `file` as tab-delimited text columns or NetCDF.
 The **experimental** NetCDF method will be used if `file` ends with a `.nc` extension.
 For tab-delimited output, the first line is a header containing the column names.
 
+Throws a `PlateMotionRequests.WriteError` if the table header is not recognised,
+or if attempting to write a NetCDF file of irregularly sampled data.
+
 !!! note
 
     Irregular sampling of latitude or longitude values is not supported for NetCDF output.
@@ -275,11 +282,27 @@ See also: [`read_platemotion`](@ref).
 """
 function write_platemotion(file, table)
     if splitext(file)[2] == ".nc"
-        write_netcdf(file, table)
+        try
+            write_netcdf(file, table)
+        catch e
+            if e isa SamplingError
+                throw(WriteError(e.msg))
+            end
+        end
     else
-        open(file, "w") do io
-            println(io, join(String.(columnnames(table)), '\t'))
-            writedlm(io, table, '\t')
+        if columnnames(table) in map(fieldnames, (FormatASCII, FormatASCIIxyz, FormatPsvelo))
+            open(file, "w") do io
+                println(io, join(String.(columnnames(table)), '\t'))
+                writedlm(io, table, '\t')
+            end
+        else
+            throw(
+                WriteError(
+                    "table column names must match a supported format." *
+                    " You've supplied a table with the following columns:" *
+                    join(String.(columnnames(table)), ", "),
+                ),
+            )
         end
     end
 end
@@ -350,6 +373,7 @@ end
     verify_regularity(x, y)
 
 Verify regularity of both input arrays and return a tuple of step sizes.
+Throws a `PlateMotionRequests.SamplingError` for irregular data.
 
 """
 function verify_regularity(x, y)
@@ -439,16 +463,19 @@ Expects a single tab-delimited header line,
 with column names that match one of the supported formats.
 See [`platemotion`](@ref) for details.
 
+May throw a `PlateMotionRequests.ReadError`.
+
 """
 function read_platemotion(file)
     data, header = readdlm(file, '\t', Any, '\n', header = true)
-    isformat(format) = Set(header) == Set(String.(fieldnames(format)))
+    isformat(format) = Set(strip.(header)) == Set(String.(fieldnames(format)))
+    cleanstrings(data) = map(s -> s isa AbstractString ? strip(s) : s, data)
     if isformat(FormatASCII)
-        table = as_table(FormatASCII, data)
+        table = as_table(FormatASCII, cleanstrings(data))
     elseif isformat(FormatASCIIxyz)
-        table = as_table(FormatASCIIxyz, data)
+        table = as_table(FormatASCIIxyz, cleanstrings(data))
     elseif isformat(FormatPsvelo)
-        table = as_table(FormatPsvelo, data)
+        table = as_table(FormatPsvelo, cleanstrings(data))
     else
         throw(
             ReadError(
