@@ -98,20 +98,23 @@ against `Project.toml`.
 5. Update `docs/src/changelog.md` with the date of release and a concise list of changes.
 6. If the changelog is larger than 1MB, split off a `changelog-<version_range>.md` for old versions.
 7. Run [JuliaFormatter](https://github.com/domluna/JuliaFormatter.jl) on the entire `src/` tree.
-8. Commit the changes to `next` with a message like `Prepare release v<version>`.
-9. Create an annotated git tag with `git tag -am "Version <version>" v<version>`.
-10. Push `next` to all remotes (with `--follow-tags`).
+8. Commit the changes to `next` with a message like `Release (unstable) v<version>`.
+9. **Don't tag the release!** Releases must only be tagged after registration on `main`.
+10. Push `next` to all remotes.
 
 ### Releasing a new version on `main` (stable)
 
 Once a release is considered stable enough, it can be merged onto `main` from `next`.
-Then the HTML documentation also needs to be built.
+Then the HTML documentation also needs to be built, and the package can be registered with
+[Registrator.jl](https://github.com/JuliaRegistries/Registrator.jl).
 Starting on `main`:
 
-1. Create a documentation branch with `git switch -c gh-pages-<version>`; **all remaining steps are to be performed on this branch**.
-2. Build the web docs with `julia --project=docs/ docs/make.jl`.
+1. Create a documentation branch with `git switch -c gh-pages-<version>`.
+2. Build the web docs **on the new branch** with `julia --project=docs/ docs/make.jl`.
 3. From the project root: `mv docs/build site`.
 4. Remove the `docs` folder **only on this branch** (due to GitHub Pages inflexibility).
 5. From the project root: `mv site docs`, `git add -A`, `git c -m "Docs for v<version>"`.
-6. Push both `main` and the documentation branch to all remotes (with `--follow-tags`).
+6. Push both `main` and the documentation branch to all remotes.
 7. In the GitHub repository web UI, navigate to `Settings > Pages`, change the branch accordingly and make sure it is looking in the `docs/` subfolder.
+8. Register the package, possibly creating new commits to resolve issues raised by registry maintainers.
+9. Create an annotated git tag with `git tag -am "Version <version>" v<version>`.
