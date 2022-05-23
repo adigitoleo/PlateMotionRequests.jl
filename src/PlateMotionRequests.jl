@@ -468,13 +468,14 @@ May throw a `PlateMotionRequests.ReadError`.
 """
 function read_platemotion(file)
     data, header = readdlm(file, '\t', Any, '\n', header = true)
-    isformat(format) = Set(header) == Set(String.(fieldnames(format)))
+    isformat(format) = Set(strip.(header)) == Set(String.(fieldnames(format)))
+    cleanstrings(data) = map(s -> s isa AbstractString ? strip(s) : s, data)
     if isformat(FormatASCII)
-        table = as_table(FormatASCII, data)
+        table = as_table(FormatASCII, cleanstrings(data))
     elseif isformat(FormatASCIIxyz)
-        table = as_table(FormatASCIIxyz, data)
+        table = as_table(FormatASCIIxyz, cleanstrings(data))
     elseif isformat(FormatPsvelo)
-        table = as_table(FormatPsvelo, data)
+        table = as_table(FormatPsvelo, cleanstrings(data))
     else
         throw(
             ReadError(
