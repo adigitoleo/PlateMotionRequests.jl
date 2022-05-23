@@ -5,6 +5,13 @@ Notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] : 2022-05-23
+
+### Added
+- NetCDF output tests
+- `WriteError` for error semantics when trying to write irregular data to NetCDF (unsupported)
+- Support for reading right-aligned tabular data files with `read_platemotion`
+
 ## [3.0.0] : 2022-01-18
 
 ### Changed

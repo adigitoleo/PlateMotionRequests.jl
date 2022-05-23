@@ -290,7 +290,8 @@ function write_platemotion(file, table)
             end
         end
     else
-        if columnnames(table) in map(fieldnames, (FormatASCII, FormatASCIIxyz, FormatPsvelo))
+        if columnnames(table) in
+           map(fieldnames, (FormatASCII, FormatASCIIxyz, FormatPsvelo))
             open(file, "w") do io
                 println(io, join(String.(columnnames(table)), '\t'))
                 writedlm(io, table, '\t')
