@@ -1,6 +1,7 @@
 image: ubuntu/lts
 tasks:
     - prepare: |
+        git name-rev HEAD|grep -q -e 'main' -e 'next' -e 'dev' || complete-build
         cd PlateMotionRequests.jl
         JULIA_VERSION='1.7.3'
         JULIA_VERSION_SHORT='1.7'
