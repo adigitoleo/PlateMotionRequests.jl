@@ -1,17 +1,5 @@
-name = "PlateMotionRequests"
-uuid = "d13234e1-ff52-466f-9770-1615bbbda812"
-authors = ["adigitoleo <adigitoleo@dissimulo.com>"]
-version = "3.1.0"
-
-[compat]
-julia = "1.7.2"
-DataStructures = "0.18.12"
-DocStringExtensions = "0.8.6"
-HTTP = "0.9.17"
-NCDatasets = "0.12.4"
-TypedTables = "1.4.0"
-
 [deps]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
