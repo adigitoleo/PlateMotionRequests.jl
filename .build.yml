@@ -2,7 +2,7 @@ image: ubuntu/lts
 tasks:
     - prepare: |
         cd PlateMotionRequests.jl
-        JULIA_VERSION='1.7.2'
+        JULIA_VERSION='1.7.3'
         JULIA_VERSION_SHORT='1.7'
         wget "https://julialang-s3.julialang.org/bin/linux/x64/$JULIA_VERSION_SHORT/julia-$JULIA_VERSION-linux-x86_64.tar.gz"
         wget "https://julialang-s3.julialang.org/bin/linux/x64/$JULIA_VERSION_SHORT/julia-$JULIA_VERSION-linux-x86_64.tar.gz.asc"
