@@ -836,71 +836,71 @@ end
         end
     end
 
-    @testset "NetCDF" begin
-        try
-            write_platemotion(filename("ASCII_GSRMv2_regular.nc"), mock_ascii_gsrm_regular)
-            ds = NCDataset(filename("ASCII_GSRMv2_regular.nc"))
-            # Check global attributes.
-            for key in ("Conventions", "title", "institution", "references", "comment")
-                haskey(ds, key)
-            end
-            @test ds.attrib["Conventions"] == "CF-1.9"
-            @test ds.attrib["title"] == "Tectonic plate motions"
-            @test ds.attrib["institution"] == "https://www.unavco.org/"
-            @test ds.attrib["references"] ==
-                  "See <https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html#references>"
-            @test ds.attrib["comment"] ==
-                  "Produced using https://git.sr.ht/~adigitoleo/PlateMotionRequests.jl\n"
-            # Check dimensions.
-            @test haskey(ds.dim, "lat")
-            @test haskey(ds.dim, "lon")
-            @test ds["lat"][:] == collect(-35:10:45)
-            @test ds["lon"][:] == [110, 120]
-            # Check variables.
-            for key in ("velocity_east", "velocity_north", "plate_and_reference", "model")
-                @test haskey(ds, key)
-            end
-            @test ds["velocity_east"][:] == [
-                41.58 35.79
-                42.45 38.18
-                42.03 39.42
-                23.36 23.49
-                26.03 25.90
-                27.92 27.54
-                28.97 28.34
-                29.15 28.28
-                28.43 27.37
-            ]
-            @test ds["velocity_north"][:] == [
-                56.94 58.98
-                56.97 59.01
-                56.99 59.03
-                -7.34 -9.92
-                -7.34 -9.92
-                -7.34 -9.91
-                -7.34 -9.91
-                -7.34 -9.91
-                -7.33 -9.90
-            ]
-            @test all(x -> x == "GSRM v2.1", ds["model"][:])
-            @test ds["plate_and_reference"] == [
-                "AU(NNR)" "AU(NNR)"
-                "AU(NNR)" "AU(NNR)"
-                "AU(NNR)" "AU(NNR)"
-                "EU(NNR)" "EU(NNR)"
-                "EU(NNR)" "EU(NNR)"
-                "EU(NNR)" "EU(NNR)"
-                "EU(NNR)" "EU(NNR)"
-                "EU(NNR)" "EU(NNR)"
-                "EU(NNR)" "EU(NNR)"
-            ]
-            @test_throws _pmr.WriteError write_platemotion(
-                filename("ASCII_all_models_irregular.nc"),
-                mock_ascii_all_models_irregular,
-            )
-        finally
-            rm(filename("ASCII_GSRMv2_regular.nc"), force = true)
-            rm(filename("ASCII_all_models_irregular.nc"), force = true)
-        end
-    end
+    # @testset "NetCDF" begin
+    #     try
+    #         write_platemotion(filename("ASCII_GSRMv2_regular.nc"), mock_ascii_gsrm_regular)
+    #         ds = NCDataset(filename("ASCII_GSRMv2_regular.nc"))
+    #         # Check global attributes.
+    #         for key in ("Conventions", "title", "institution", "references", "comment")
+    #             haskey(ds, key)
+    #         end
+    #         @test ds.attrib["Conventions"] == "CF-1.9"
+    #         @test ds.attrib["title"] == "Tectonic plate motions"
+    #         @test ds.attrib["institution"] == "https://www.unavco.org/"
+    #         @test ds.attrib["references"] ==
+    #               "See <https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html#references>"
+    #         @test ds.attrib["comment"] ==
+    #               "Produced using https://git.sr.ht/~adigitoleo/PlateMotionRequests.jl\n"
+    #         # Check dimensions.
+    #         @test haskey(ds.dim, "lat")
+    #         @test haskey(ds.dim, "lon")
+    #         @test ds["lat"][:] == collect(-35:10:45)
+    #         @test ds["lon"][:] == [110, 120]
+    #         # Check variables.
+    #         for key in ("velocity_east", "velocity_north", "plate_and_reference", "model")
+    #             @test haskey(ds, key)
+    #         end
+    #         @test ds["velocity_east"][:] == [
+    #             41.58 35.79
+    #             42.45 38.18
+    #             42.03 39.42
+    #             23.36 23.49
+    #             26.03 25.90
+    #             27.92 27.54
+    #             28.97 28.34
+    #             29.15 28.28
+    #             28.43 27.37
+    #         ]
+    #         @test ds["velocity_north"][:] == [
+    #             56.94 58.98
+    #             56.97 59.01
+    #             56.99 59.03
+    #             -7.34 -9.92
+    #             -7.34 -9.92
+    #             -7.34 -9.91
+    #             -7.34 -9.91
+    #             -7.34 -9.91
+    #             -7.33 -9.90
+    #         ]
+    #         @test all(x -> x == "GSRM v2.1", ds["model"][:])
+    #         @test ds["plate_and_reference"] == [
+    #             "AU(NNR)" "AU(NNR)"
+    #             "AU(NNR)" "AU(NNR)"
+    #             "AU(NNR)" "AU(NNR)"
+    #             "EU(NNR)" "EU(NNR)"
+    #             "EU(NNR)" "EU(NNR)"
+    #             "EU(NNR)" "EU(NNR)"
+    #             "EU(NNR)" "EU(NNR)"
+    #             "EU(NNR)" "EU(NNR)"
+    #             "EU(NNR)" "EU(NNR)"
+    #         ]
+    #         @test_throws _pmr.WriteError write_platemotion(
+    #             filename("ASCII_all_models_irregular.nc"),
+    #             mock_ascii_all_models_irregular,
+    #         )
+    #     finally
+    #         rm(filename("ASCII_GSRMv2_regular.nc"), force = true)
+    #         rm(filename("ASCII_all_models_irregular.nc"), force = true)
+    #     end
+    # end
 end
