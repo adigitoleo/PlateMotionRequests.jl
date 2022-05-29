@@ -86,7 +86,7 @@ If you want to work on one of them,
 send an email first to check if an implementation is already underway.
 
 CI is set up for commits pushed to `main`, `next` or `dev`.
-The CI manifest is in the `.build.yml` file.
+The CI manifests are in `.build.yml` and `.github/workflows/ci.yml`.
 Logs of test runs are available:
-- Linux tests: [![builds.sr.ht status](https://builds.sr.ht/~adigitoleo/PlateMotionRequests.jl.svg)](https://builds.sr.ht/~adigitoleo/PlateMotionRequests.jl?)
-- Windows tests: [![GitHub](https://github.com/adigitoleo/PlateMotionRequests.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/adigitoleo/PlateMotionRequests.jl/actions/workflows/ci.yml)
+- [![builds.sr.ht status](https://builds.sr.ht/~adigitoleo/PlateMotionRequests.jl.svg)](https://builds.sr.ht/~adigitoleo/PlateMotionRequests.jl?) (Linux)
+- [![GitHub status](https://github.com/adigitoleo/PlateMotionRequests.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/adigitoleo/PlateMotionRequests.jl/actions/workflows/ci.yml) (Windows)

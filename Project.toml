@@ -2,9 +2,12 @@ name = "PlateMotionRequests"
 uuid = "d13234e1-ff52-466f-9770-1615bbbda812"
 authors = ["adigitoleo <adigitoleo@dissimulo.com>"]
 version = "3.1.0"
+keywords = ["geophysics"]
+license = "0BSD"
+desc = "Request tectonic plate motion data for various Earth rotation models in Julia"
 
 [compat]
-julia = "1.7.2"
+julia = "1"
 DataStructures = "0.18.12"
 DocStringExtensions = "0.8.6"
 HTTP = "0.9.17"
