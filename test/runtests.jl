@@ -836,7 +836,11 @@ end
         end
     end
 
-    @testset broken=Sys.iswindows() "NetCDF" begin
+    @testset "NetCDF" begin
+        if Sys.iswindows()
+            println("NetCDF writer is currently broken on Windows")
+            return
+        end
         try
             write_platemotion(filename("ASCII_GSRMv2_regular.nc"), mock_ascii_gsrm_regular)
             ds = NCDataset(filename("ASCII_GSRMv2_regular.nc"))
