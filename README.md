@@ -6,21 +6,15 @@ The package is open source, and the [code is available](https://git.sr.ht/~adigi
 under the [Zero-Clause BSD license](https://git.sr.ht/~adigitoleo/PlateMotionRequests.jl/blob/main/LICENSE).
 There is also a website with [online documentation](https://adigitoleo.github.io/PlateMotionRequests.jl/).
 
-**Versions prior to `2.0.1` were experimental and should be avoided if possible.**
-
 
 ## Installation
 
-This package currently requires Julia 1.7.2 or above.
-CI status (Linux): [![builds.sr.ht status](https://builds.sr.ht/~adigitoleo/PlateMotionRequests.jl.svg)](https://builds.sr.ht/~adigitoleo/PlateMotionRequests.jl?)
-
 From the Julia shell, switch to package mode with `]` and run
 
-    add https://git.sr.ht/~adigitoleo/PlateMotionRequests.jl
+    add PlateMotionRequests
 
 For advanced packaging instructions,
 refer to the [Julia Pkg docs](https://docs.julialang.org/en/v1/stdlib/Pkg/).
-
 
 ## Usage
 
@@ -38,7 +32,7 @@ refer to the [Julia Pkg docs](https://docs.julialang.org/en/v1/stdlib/Pkg/).
 Data can be written to/read from storage using `write_platemotion` and `read_platemotion`.
 These functions write/read simple tab-delimited text files.
 By using the `.nc` file extension, you can tell `write_platemotion` to use
-an experimental NetCDF output format.
+an experimental NetCDF output format (NetCDF tests currently fail on Windows).
 To store binary representations,
 the `Serialization` module from Julia's standard library may prove useful.
 Other formats like HDF5 or ASDF may be preferred,
@@ -84,8 +78,15 @@ Please use the public mailing list for feedback and discussion:
 
 [~adigitoleo/platemotionrequests.jl-devel@lists.sr.ht](mailto:~adigitoleo/platemotionrequests.jl-devel@lists.sr.ht)
 
-Contributions are handled via patches sent to the same mailing list.
+Contributions are handled via patches sent to the same mailing list (preferred)
+or pull requests at the [GitHub mirror](https://github.com/adigitoleo/PlateMotionRequests.jl).
 Contributor guidelines are provided with the source code repository (in the file `CONTRIBUTING.md`).
 The file `TODO.md` lists some ideas for planned features.
 If you want to work on one of them,
 send an email first to check if an implementation is already underway.
+
+CI is set up for commits pushed to `main`, `next` or `dev`.
+The CI manifest is in the `.build.yml` file.
+Logs of test runs are available:
+- Linux tests: [![builds.sr.ht status](https://builds.sr.ht/~adigitoleo/PlateMotionRequests.jl.svg)](https://builds.sr.ht/~adigitoleo/PlateMotionRequests.jl?)
+- Windows tests: [![GitHub](https://github.com/adigitoleo/PlateMotionRequests.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/adigitoleo/PlateMotionRequests.jl/actions/workflows/ci.yml)
