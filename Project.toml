@@ -10,7 +10,6 @@ DocStringExtensions = "0.8.6"
 HTTP = "0.9.17"
 NCDatasets = "0.12.4"
 TypedTables = "1.4.0"
-NetCDF_jll = "=400.702.400"
 
 [deps]
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
