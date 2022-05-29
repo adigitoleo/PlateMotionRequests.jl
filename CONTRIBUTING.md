@@ -4,7 +4,7 @@
 ## Git branching
 
 The project maintainer will oversee three public branches:
-- `main` (a branch for stable releases),
+- `main` (a branch for handling releases and registration),
 - `next` (a branch for stabilisation of the next release) and
 - `dev` (a branch for integrating destabilising changes).
 
@@ -17,7 +17,7 @@ branch from `main` instead and use `git merge` to incorporate the commits you ne
 
 The branching setup is a simplified version of [git-workflow](https://hackernoon.com/how-the-creators-of-git-do-branches-e6fcc57270fb),
 without a previous release maintenance branch.
-Only the latest stable release will be maintained with bugfixes.
+Only the latest release will be maintained with bugfixes.
 
 
 ## Formatting
@@ -81,37 +81,35 @@ Each component should consist of no more than two lines. For example:
 ## Releasing new versions
 
 Version releases should adhere to [semantic versioning](https://semver.org/).
-Code that is on `next` may undergo a few patch version increments before making it to `main`,
-so stable releases might skip a few tags.
-Online documentation is only built for stable versions.
-Releasing new versions requires admin access to the GitHub repository.
+Releasing new versions requires admin access to the GitHub mirror,
+which is used for hosting the documentation.
 
-### Releasing a new version on `next` (unstable)
+### Preparing the release on `next`
 
-1. Update `Project.toml` with the new version number.
-2. Update the project manifest: `julia --project=$PWD -e 'using Pkg; Pkg.update()'`
-3. Verify that any tests are passing locally (otherwise `git restore` everything and go debugging).
-4. Update the documentation files, including `docs/make.jl` if necessary (fix it if broken).
-5. Update `docs/src/changelog.md` with the date of release and a concise list of changes.
-6. If the changelog is larger than 1MB, split off a `changelog-<version_range>.md` for old versions.
-7. Run [JuliaFormatter](https://github.com/domluna/JuliaFormatter.jl) on the entire `src/` tree.
-8. Commit the changes to `next` with a message like `Release (unstable) v<version>`.
-9. **Don't tag the release!** Releases must only be tagged after registration on `main`.
-10. Push `next` to all remotes.
+1. Update the project manifest: `julia --project=$PWD -e 'using Pkg; Pkg.update()'`.
+2. Verify that any tests are passing locally (or debug failures/errors, separate commits).
+3. Update the documentation files, including `docs/make.jl` if necessary.
+4. Update `docs/src/changelog.md` with an `Unreleased <date>` section (concise list of changes).
+5. If the changelog is larger than 1MB, split off a `changelog-<version_range>.md` for old versions.
+6. Run [JuliaFormatter](https://github.com/domluna/JuliaFormatter.jl) on the entire `src/` tree.
+7. Commit the changes to `next` with a message like `Prepare release v<version>`.
+8. **Don't add a tag!** Releases must only be tagged after registration on `main`.
+9. Push `next` to all remotes.
 
-### Releasing a new version on `main` (stable)
+### Releasing a new version on `main`
 
-Once a release is considered stable enough, it can be merged onto `main` from `next`.
+Any commit from `next` that is considered stable enough can be merged into `main`.
 Then the HTML documentation also needs to be built, and the package can be registered with
 [Registrator.jl](https://github.com/JuliaRegistries/Registrator.jl).
-Starting on `main`:
+After merging, switch to `main`, then:
 
-1. Create a documentation branch with `git switch -c gh-pages-<version>`.
-2. Build the web docs **on the new branch** with `julia --project=docs/ docs/make.jl`.
-3. From the project root: `mv docs/build site`.
-4. Remove the `docs` folder **only on this branch** (due to GitHub Pages inflexibility).
-5. From the project root: `mv site docs`, `git add -A`, `git c -m "Docs for v<version>"`.
-6. Push both `main` and the documentation branch to all remotes.
-7. In the GitHub repository web UI, navigate to `Settings > Pages`, change the branch accordingly and make sure it is looking in the `docs/` subfolder.
-8. Register the package, possibly creating new commits to resolve issues raised by registry maintainers.
-9. Create an annotated git tag with `git tag -am "Version <version>" v<version>`.
+1. Bump the version number in `Project.toml` and register the package.
+2. Resolve issues raised by registry maintainers and repeat step 1 **with new patch versions**.
+3. After successful registration, create an annotated git tag with `git tag -am "Version <version>" v<version>`.
+4. Create a documentation branch with `git switch -c gh-pages-<version>`.
+5. Build the web docs **on the new branch** with `julia --project=docs/ docs/make.jl`.
+6. From the project root: `mv docs/build site`.
+7. Remove the `docs` folder **only on this branch** (due to GitHub Pages inflexibility).
+8. From the project root: `mv site docs`, `git add -A`, `git c -m "Docs for v<version>"`.
+9. Push `main` to all remotes, and the documentation branch to GitHub.
+10. In the GitHub repository web UI, navigate to `Settings > Pages`, change the branch accordingly and make sure it is looking in the `docs/` subfolder.
