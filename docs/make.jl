@@ -1,5 +1,6 @@
 using Pkg
 Pkg.activate("$(@__DIR__)")
+Pkg.add("PlateMotionRequests")
 Pkg.update()
 
 using Documenter
