@@ -7,9 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 The first version of this package registered in the [Julia General registry](https://github.com/JuliaRegistries/General) was v3.1.0, earlier versions should be considered experimental.
 
-## [Unreleased]
+## [3.1.1]: 2022-05-29
 
-## Changed
+### Changed
 - test suite, to avoid running NetCDF tests on Windows (currently broken)
 
 ## [3.1.0] : 2022-05-23
