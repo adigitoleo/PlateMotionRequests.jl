@@ -116,7 +116,7 @@ end
 function submit(request)
     return HTTP.post(
         "https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion/model",
-        ["User-Agent" => "PlateMotionRequests.jl/$PACKAGE_VERSION (Julia/$VERSION)"],
+        ["User-Agent" => "PlateMotionRequests.jl/$(PACKAGE_VERSION) (Julia/$VERSION)"],
         HTTP.Form(request),
     )
 end
@@ -330,9 +330,8 @@ function write_netcdf(file, table)
         "title" => "Tectonic plate motions",
         "institution" => "https://www.unavco.org/",
         "source" => join(unique(table.model), ",\n "),
-        "history" => "[$(now())]: Created by PlateMotionRequests.jl $PACKAGE_VERSION\n",
+        "history" => "[$(now())]: Created by PlateMotionRequests.jl $(PACKAGE_VERSION)\n",
 
-        \n",
         "references" => "See <https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html#references>",
         "comment" => "Produced using https://git.sr.ht/~adigitoleo/PlateMotionRequests.jl\n",
     )
