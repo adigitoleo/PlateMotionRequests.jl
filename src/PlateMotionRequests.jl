@@ -23,6 +23,13 @@ using NCDatasets
 using TypedTables
 
 
+# https://discourse.julialang.org/t/how-to-find-out-the-version-of-a-package-from-its-module/37755/15
+const PACKAGE_VERSION = let
+    project = TOML.parsefile(joinpath(pkgdir(@__MODULE__), "Project.toml"))
+    VersionNumber(project["version"])
+end
+
+
 """
     platemotion(lats, lons, heights; kwargs...)
     platemotion(lats, lons; kwargs...)
@@ -109,7 +116,7 @@ end
 function submit(request)
     return HTTP.post(
         "https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion/model",
-        ["User-Agent" => "PlateMotionRequests.jl/$(pkgversion()) (Julia/$VERSION)"],
+        ["User-Agent" => "PlateMotionRequests.jl/$PACKAGE_VERSION (Julia/$VERSION)"],
         HTTP.Form(request),
     )
 end
@@ -323,7 +330,9 @@ function write_netcdf(file, table)
         "title" => "Tectonic plate motions",
         "institution" => "https://www.unavco.org/",
         "source" => join(unique(table.model), ",\n "),
-        "history" => "[$(now())]: Created by PlateMotionRequests.jl $(pkgversion())\n",
+        "history" => "[$(now())]: Created by PlateMotionRequests.jl $PACKAGE_VERSION\n",
+
+        \n",
         "references" => "See <https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html#references>",
         "comment" => "Produced using https://git.sr.ht/~adigitoleo/PlateMotionRequests.jl\n",
     )
@@ -487,11 +496,6 @@ function read_platemotion(file)
         )
     end
     return table
-end
-
-
-function pkgversion()
-    return VersionNumber(TOML.parsefile("$(@__DIR__)/../Project.toml")["version"])
 end
 
 
