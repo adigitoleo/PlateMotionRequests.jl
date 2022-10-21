@@ -8,7 +8,7 @@ using NCDatasets
 using TypedTables
 
 using PlateMotionRequests
-_pmr = PlateMotionRequests
+const _pmr = PlateMotionRequests
 
 
 function load_mock_response(file)
