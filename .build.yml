@@ -7,7 +7,7 @@ tasks:
         git name-rev HEAD|grep -q -e 'main' -e 'next' -e 'dev' || complete-build
     - build: |
         cd PlateMotionRequests.jl
-        ./julia --project -e 'using Pkg; Pkg.instantiate()'
+        julia --project -e 'using Pkg; Pkg.instantiate()'
     - test: |
         cd PlateMotionRequests.jl
-        ./julia --project test/runtests.jl
+        julia --project test/runtests.jl
