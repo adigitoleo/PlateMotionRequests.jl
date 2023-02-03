@@ -331,7 +331,6 @@ function write_netcdf(file, table)
         "institution" => "https://www.unavco.org/",
         "source" => join(unique(table.model), ",\n "),
         "history" => "[$(now())]: Created by PlateMotionRequests.jl $(PACKAGE_VERSION)\n",
-
         "references" => "See <https://www.unavco.org/software/geodetic-utilities/plate-motion-calculator/plate-motion-calculator.html#references>",
         "comment" => "Produced using https://git.sr.ht/~adigitoleo/PlateMotionRequests.jl\n",
     )
