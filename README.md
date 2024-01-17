@@ -74,9 +74,8 @@ You may also want to refer to the UNAVCO website linked above.
 
 ## Feedback and contributions
 
-Please use the public mailing list for feedback and discussion:
-
-[~adigitoleo/platemotionrequests.jl-devel@lists.sr.ht](mailto:~adigitoleo/platemotionrequests.jl-devel@lists.sr.ht)
+Please use my [public inbox](https://lists.sr.ht/~adigitoleo/public-inbox)
+for feedback and discussion.
 
 Contributions are handled via patches sent to the same mailing list (preferred)
 or pull requests at the [GitHub mirror](https://github.com/adigitoleo/PlateMotionRequests.jl).
