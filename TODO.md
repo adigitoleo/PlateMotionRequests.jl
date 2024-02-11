@@ -1,5 +1,6 @@
 ## TODO
 
+- set up monthly data pulls and testing
 - support site names?
 
 ## Out of scope
